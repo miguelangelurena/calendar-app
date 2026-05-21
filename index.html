@@ -3,96 +3,63 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calendario - Group Zoé</title>
+    <title>Calendario · Group Zoé</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="assets/styles.css" />
     <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
-    <link
-      rel="icon"
-      type="image/x-icon"
-      href="assets/images/favicon_io/favicon.ico"
-    />
-
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="assets/images/favicon_io/favicon-32x32.png"
-    />
-
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="assets/images/favicon_io/favicon-16x16.png"
-    />
-
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="assets/images/favicon_io/apple-touch-icon.png"
-    />
-
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon_io/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon_io/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon_io/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/favicon_io/apple-touch-icon.png" />
     <link rel="manifest" href="assets/images/favicon_io/site.webmanifest" />
-
-    <link
-      rel="android-chrome"
-      sizes="192x192"
-      href="assets/images/favicon_io/android-chrome-192x192.png"
-    />
-
-    <link
-      rel="android-chrome"
-      sizes="512x512"
-      href="assets/images/favicon_io/android-chrome-512x512.png"
-    />
   </head>
   <body>
-    <div id="status-bar">Conectando a Supabase...</div>
+    <div id="status-bar">Conectando…</div>
 
     <header>
       <div class="header-brand">
-        <div class="brand-icon"><img src="/assets/images/logo.png"></div>
+        <div class="brand-icon">
+          <img src="/assets/images/logo.png" alt="Logo" />
+        </div>
         <div class="brand-text">
-          <h1>Group Zoé - Aliento de Vida</h1>
+          <h1>Group Zoé · Aliento de Vida</h1>
           <p>Calendario de Ministerio</p>
         </div>
       </div>
       <button class="btn-outline" onclick="openMembersModal()">
-        👥 Equipo
+        <svg width="15" height="15" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM6 8a2 2 0 11-4 0 2 2 0 014 0zM1 18v-1a7 7 0 0114 0v1H1zM19 18v-1a5 5 0 00-4-4.9M5 13.1A5 5 0 001 18v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Equipo
       </button>
     </header>
 
+    <!-- MEMBERS MODAL -->
     <div id="members-modal">
       <div class="modal-box">
-        <h3>👥 Gestionar Equipo</h3>
-        <div class="add-row" style="margin-bottom: 1.2rem">
-          <input id="new-member-name" placeholder="Nombre" />
-          <input
-            id="new-member-instr"
-            placeholder="Instrumento"
-            style="flex: 0.8"
-          />
+        <h3>Gestionar Equipo</h3>
+        <div class="add-row" style="margin-bottom:14px">
+          <input id="new-member-name" placeholder="Nombre completo" />
+          <input id="new-member-instr" placeholder="Instrumento" style="flex:0.7" />
           <button onclick="addMember()">+</button>
         </div>
         <div id="modal-member-list"></div>
-        <button class="btn-close-modal" onclick="closeMembersModal()">
-          Cerrar
-        </button>
+        <button class="btn-close-modal" onclick="closeMembersModal()">Cerrar</button>
       </div>
     </div>
 
     <div class="main">
+      <!-- CALENDAR -->
       <div class="calendar-card">
         <div class="cal-header">
           <div class="cal-nav">
             <button onclick="changeMonth(-1)">&#8249;</button>
-            <div class="cal-month" id="cal-month-label">Cargando...</div>
+            <div class="cal-month" id="cal-month-label">Cargando…</div>
             <button onclick="changeMonth(1)">&#8250;</button>
           </div>
         </div>
@@ -100,69 +67,56 @@
         <div class="cal-grid" id="cal-days"></div>
       </div>
 
+      <!-- SIDE PANEL -->
       <div class="side-panel">
+
+        <!-- DAY DETAIL -->
         <div class="panel-card">
           <div class="panel-header">
-            <h3>📋 Detalle del Día</h3>
+            <h3>Detalle del Día</h3>
             <span class="date-label" id="detail-date">—</span>
           </div>
           <div class="panel-body" id="detail-body">
             <div class="no-selection">
-              <div class="icon">🗓️</div>
-              <p>
-                Selecciona un día en el calendario para ver o editar el
-                programa.
-              </p>
+              <div class="icon">🗓</div>
+              <p>Selecciona un día para ver o editar el programa.</p>
             </div>
           </div>
         </div>
+
+        <!-- TEAM CARD -->
         <div class="panel-card" id="team-card">
           <div
             class="panel-header"
             onclick="toggleTeam()"
-            style="cursor: pointer; user-select: none"
+            style="cursor:pointer;user-select:none"
           >
-            <h3>🎸 Equipo</h3>
-            <div style="display: flex; align-items: center; gap: 10px">
-              <span
-                style="font-size: 0.78rem; color: var(--muted)"
-                id="member-count"
-                >0 miembros</span
-              >
-              <span
-                id="team-chevron"
-                style="
-                  color: var(--muted);
-                  font-size: 0.85rem;
-                  transition: transform 0.25s;
-                "
-                >▲</span
-              >
+            <h3>Equipo</h3>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:11px;color:var(--text-3)" id="member-count">0 miembros</span>
+              <svg id="team-chevron" width="14" height="14" viewBox="0 0 20 20" fill="none"
+                style="color:var(--text-3);transition:transform 0.25s;transform:rotate(180deg)">
+                <path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
             </div>
           </div>
           <div
             id="team-collapsible"
-            style="
-              overflow: hidden;
-              transition:
-                max-height 0.3s ease,
-                border-top 0.3s ease;
-              max-height: 600px;
-              border-top: 1px solid var(--border);
-            "
+            style="overflow:hidden;transition:max-height 0.3s ease;max-height:0px;"
           >
             <div id="team-mini-list" class="team-grid">
-              <div class="no-members" style="grid-column: span 2">
+              <div class="no-members" style="grid-column:span 2">
                 Agrega miembros con el botón "Equipo"
               </div>
             </div>
           </div>
         </div>
+
       </div>
     </div>
 
     <div id="toast"></div>
-
     <script src="/script.js"></script>
   </body>
 </html>

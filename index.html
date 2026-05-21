@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Equipo de Alabanza</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  </head>
+  <body>
+    <div id="status-bar">Conectando a Supabase...</div>
+
+    <header>
+      <div class="header-brand">
+        <div class="brand-icon">🎶</div>
+        <div class="brand-text">
+          <h1>Equipo de Alabanza</h1>
+          <p>Calendario de Ministerio</p>
+        </div>
+      </div>
+      <button class="btn-outline" onclick="openMembersModal()">
+        👥 Equipo
+      </button>
+    </header>
+
+    <div id="members-modal">
+      <div class="modal-box">
+        <h3>👥 Gestionar Equipo</h3>
+        <div class="add-row" style="margin-bottom: 1.2rem">
+          <input id="new-member-name" placeholder="Nombre" />
+          <input
+            id="new-member-instr"
+            placeholder="Instrumento"
+            style="flex: 0.8"
+          />
+          <button onclick="addMember()">+</button>
+        </div>
+        <div id="modal-member-list"></div>
+        <button class="btn-close-modal" onclick="closeMembersModal()">
+          Cerrar
+        </button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="calendar-card">
+        <div class="cal-header">
+          <div class="cal-nav">
+            <button onclick="changeMonth(-1)">&#8249;</button>
+            <div class="cal-month" id="cal-month-label">Cargando...</div>
+            <button onclick="changeMonth(1)">&#8250;</button>
+          </div>
+        </div>
+        <div class="cal-grid" id="cal-dow"></div>
+        <div class="cal-grid" id="cal-days"></div>
+      </div>
+
+      <div class="side-panel">
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3>📋 Detalle del Día</h3>
+            <span class="date-label" id="detail-date">—</span>
+          </div>
+          <div class="panel-body" id="detail-body">
+            <div class="no-selection">
+              <div class="icon">🗓️</div>
+              <p>
+                Selecciona un día en el calendario para ver o editar el
+                programa.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="panel-card" id="team-card">
+          <div
+            class="panel-header"
+            onclick="toggleTeam()"
+            style="cursor: pointer; user-select: none"
+          >
+            <h3>🎸 Equipo</h3>
+            <div style="display: flex; align-items: center; gap: 10px">
+              <span
+                style="font-size: 0.78rem; color: var(--muted)"
+                id="member-count"
+                >0 miembros</span
+              >
+              <span
+                id="team-chevron"
+                style="
+                  color: var(--muted);
+                  font-size: 0.85rem;
+                  transition: transform 0.25s;
+                "
+                >▲</span
+              >
+            </div>
+          </div>
+          <div
+            id="team-collapsible"
+            style="
+              overflow: hidden;
+              transition:
+                max-height 0.3s ease,
+                border-top 0.3s ease;
+              max-height: 600px;
+              border-top: 1px solid var(--border);
+            "
+          >
+            <div id="team-mini-list" class="team-grid">
+              <div class="no-members" style="grid-column: span 2">
+                Agrega miembros con el botón "Equipo"
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script src="/script.js"></script>
+  </body>
+</html>

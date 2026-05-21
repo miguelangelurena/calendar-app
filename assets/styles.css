@@ -4,7 +4,7 @@
   --gold-dark: #8a6020;
   --cream: #fbf7f0;
   --cream-dark: #f0e8d8;
-  --deep: #1a1208;
+  --deep: #000;
   --text: #2d2010;
   --muted: #7a6040;
   --white: #ffffff;
@@ -41,8 +41,7 @@ header {
 .brand-icon img {
   width: 42px;
   height: 42px;
-  background: var(--gold);
-  border-radius: 50%;
+  background: var(--deep);
   display: flex;
   align-items: center;
   justify-content: center;

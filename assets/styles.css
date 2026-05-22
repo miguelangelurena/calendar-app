@@ -9,9 +9,9 @@
   --text: #1c1917;
   --text-2: #57534e;
   --text-3: #a8a29e;
-  --accent: #2563eb;
-  --accent-bg: #eff6ff;
-  --accent-border: #bfdbfe;
+  --accent: #44403c;
+  --accent-bg: #f5f5f4;
+  --accent-border: #d6d3d1;
   --danger: #dc2626;
   --success-bg: #f0fdf4;
   --success-text: #15803d;
@@ -34,9 +34,9 @@
   --text: #fafaf9;
   --text-2: #a8a29e;
   --text-3: #57534e;
-  --accent: #3b82f6;
-  --accent-bg: #1e3a5f;
-  --accent-border: #1d4ed8;
+  --accent: #a8a29e;
+  --accent-bg: #2d2926;
+  --accent-border: #44403c;
   --danger: #ef4444;
   --success-bg: #052e16;
   --success-text: #4ade80;
@@ -258,11 +258,11 @@ header {
 .cal-day.today { background: var(--surface-2); }
 .cal-day.selected {
   background: var(--accent-bg);
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--border-strong);
   outline-offset: -2px;
   z-index: 1;
 }
-.cal-day.sunday .day-num { color: var(--accent); }
+.cal-day.sunday .day-num { color: var(--text-2); }
 .day-num {
   font-size: 12px;
   font-weight: 500;
@@ -271,10 +271,10 @@ header {
   font-family: 'Geist Mono', monospace;
 }
 .cal-day.today .day-num {
-  color: var(--accent);
+  color: var(--text);
   font-weight: 700;
 }
-.cal-day.selected .day-num { color: var(--accent); font-weight: 700; }
+.cal-day.selected .day-num { color: var(--text); font-weight: 700; }
 .day-dots { display: flex; flex-direction: column; gap: 2px; }
 .day-dot {
   font-size: 10px;
@@ -471,7 +471,7 @@ header {
   transition: background 0.15s;
   line-height: 1;
 }
-.add-row button:hover { background: #1d4ed8; }
+.add-row button:hover { background: var(--text-2); }
 
 /* NOTES */
 .notes-area {
@@ -496,9 +496,9 @@ header {
 }
 .notes-area::placeholder { color: var(--text-3); }
 .btn-save {
-  background: var(--text);
-  color: white;
-  border: none;
+  background: var(--border-strong);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
   padding: 9px 16px;
   font-family: inherit;
@@ -509,7 +509,7 @@ header {
   width: 100%;
   letter-spacing: -0.01em;
 }
-.btn-save:hover { background: var(--text-2); }
+.btn-save:hover { background: var(--text-2); color: var(--surface); }
 
 /* DIVIDER */
 .section-divider {

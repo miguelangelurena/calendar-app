@@ -61,7 +61,6 @@ function updateAdminUI() {
     if (membersBtn) membersBtn.style.display = "none";
   }
   applyAdminVisibility();
-  // Sincronizar estado admin con drawer móvil
   var mobileAdminIcon = document.getElementById("mobile-admin-icon");
   var mobileAdminLabel = document.getElementById("mobile-admin-label");
   var mobileMembersBtn = document.getElementById("mobile-members-btn");
@@ -121,6 +120,9 @@ var selectedDate = null;
 var scheduleData = {};
 var members = [];
 
+// Debounce timer para guardar ministros
+var _ministerSaveTimer = null;
+
 // ── STATUS BAR ──────────────────────────────────────────────
 function setStatus(msg, type) {
   var el = document.getElementById("status-bar");
@@ -154,7 +156,6 @@ function toast(msg) {
 
 // ── INIT ─────────────────────────────────────────────────────
 window.addEventListener("load", function () {
-  // Sincronizar tema inicial en el drawer móvil
   var isDark = document.documentElement.getAttribute("data-theme") === "dark";
   var icon = document.getElementById("mobile-theme-icon");
   var label = document.getElementById("mobile-theme-label");
@@ -293,12 +294,8 @@ function renderDetail(dateStr) {
   var mins = sched.ministers ? JSON.parse(sched.ministers) : [];
   var notes = sched.notes || "";
 
-  var memberOptions = members.map(function (m) {
-    return '<option value="' + m.id + '">' + m.name +
-      (m.instrument ? " — " + m.instrument : "") + "</option>";
-  }).join("");
-
   document.getElementById("detail-body").innerHTML =
+    // SONGS
     '<div class="section-label">Canciones</div>' +
     '<ul class="section-list" id="songs-list"></ul>' +
     '<div class="add-row admin-only">' +
@@ -309,6 +306,7 @@ function renderDetail(dateStr) {
 
     '<div class="section-divider"></div>' +
 
+    // MINISTERS
     '<div class="section-label">Ministros</div>' +
     '<ul class="section-list" id="ministers-list"></ul>' +
     '<div class="admin-only">' +
@@ -321,6 +319,7 @@ function renderDetail(dateStr) {
 
     '<div class="section-divider"></div>' +
 
+    // NOTES
     '<div class="section-label">Notas</div>' +
     '<textarea class="notes-area" id="notes-area" placeholder="Tono, orden del servicio…"' +
     (isAdmin ? '' : ' readonly') + '>' +
@@ -368,7 +367,8 @@ function renderSongsList(songs, dateStr) {
   }).join("");
 }
 
-// ── MINISTERS RENDER ──────────────────────────────────────────
+// ── MINISTERS RENDER ─────────────────────────────────────────
+// Sin botón × — se gestiona solo desde los checkboxes
 function renderMinistersList(mins, dateStr) {
   var el = document.getElementById("ministers-list");
   if (!el) return;
@@ -376,15 +376,11 @@ function renderMinistersList(mins, dateStr) {
     el.innerHTML = '<li class="empty-list">Sin ministros asignados</li>';
     return;
   }
-  el.innerHTML = mins.map(function (m, i) {
-    var delBtn = isAdmin
-      ? '<button class="item-del admin-only" onclick="removeMinister(' + i + ',\'' + dateStr + '\')">×</button>'
-      : "";
+  el.innerHTML = mins.map(function (m) {
     return (
       '<li>' +
       '<span class="item-name">· ' + escapeHtml(m.name) + '</span>' +
       '<span class="item-sub">' + escapeHtml(m.instrument || "") + '</span>' +
-      delBtn +
       '</li>'
     );
   }).join("");
@@ -424,6 +420,8 @@ function removeSong(idx, dateStr) {
 }
 
 // ── MINISTERS CRUD ────────────────────────────────────────────
+// toggleMinister: actualiza el estado local inmediatamente (feedback visual),
+// y programa un guardado en Supabase con debounce de 800ms.
 function toggleMinister(memberId, dateStr) {
   if (!isAdmin) return;
   var member = members.find(function (m) { return String(m.id) === String(memberId); });
@@ -439,15 +437,35 @@ function toggleMinister(memberId, dateStr) {
     mins.splice(idx, 1);
   }
 
-  upsertSchedule(dateStr, { ministers: JSON.stringify(mins) }, function () {
-    renderMinistersList(mins, dateStr);
-    renderMemberCheckboxes_update(mins, dateStr);
-    renderCalendar();
-  });
+  // Actualizar estado local y UI inmediatamente
+  if (!scheduleData[dateStr]) scheduleData[dateStr] = { date: dateStr };
+  scheduleData[dateStr].ministers = JSON.stringify(mins);
+  renderMinistersList(mins, dateStr);
+
+  // Mostrar indicador de "guardando…"
+  showSavingIndicator(true);
+
+  // Debounce: esperar 800ms sin más cambios antes de guardar
+  clearTimeout(_ministerSaveTimer);
+  _ministerSaveTimer = setTimeout(function () {
+    upsertSchedule(dateStr, { ministers: JSON.stringify(mins) }, function () {
+      showSavingIndicator(false);
+      renderCalendar();
+    });
+  }, 800);
+}
+
+// Indicador sutil de "guardando" en el botón toggle
+function showSavingIndicator(saving) {
+  var btn = document.getElementById("toggle-members-btn");
+  if (!btn) return;
+  var textSpan = btn.querySelector(".btn-toggle-label");
+  if (!textSpan) return;
+  textSpan.textContent = saving ? "Guardando…" : "Agregar ministro";
 }
 
 function renderMemberCheckboxes(currentMins, dateStr) {
-  if (!members.length) return '<p style="font-size:12px;color:var(--text-3)">Sin miembros en el equipo.</p>';
+  if (!members.length) return '<p style="font-size:12px;color:var(--text-3);padding:8px 10px">Sin miembros en el equipo.</p>';
   return members.map(function (m) {
     var checked = currentMins.some(function (min) { return String(min.id) === String(m.id); });
     return (
@@ -639,11 +657,9 @@ function exportMonthPDF() {
       link: [68, 64, 60],
     };
 
-    // Fondo general
     doc.setFillColor(C.bg[0], C.bg[1], C.bg[2]);
     doc.rect(0, 0, W, H, "F");
 
-    // Header strip
     doc.setFillColor(C.accent[0], C.accent[1], C.accent[2]);
     doc.rect(0, 0, W, 26, "F");
 
@@ -664,7 +680,6 @@ function exportMonthPDF() {
 
     var y = 34;
 
-    // Recopilar días con datos
     var daysWithData = [];
     for (var d2 = 1; d2 <= daysInMonth; d2++) {
       var ds = year + "-" + pad(month + 1) + "-" + pad(d2);
@@ -677,7 +692,6 @@ function exportMonthPDF() {
     }
 
     if (daysWithData.length > 0) {
-      // Línea divisora + título sección
       doc.setFillColor(C.accent[0], C.accent[1], C.accent[2]);
       doc.rect(margin, y, W - margin * 2, 0.35, "F");
       y += 5;
@@ -701,7 +715,6 @@ function exportMonthPDF() {
 
         var blockH = 7 + songs3.length * 5.5 + mins3.length * 5 + noteLines.length * 4 + 6;
 
-        // Nueva página si no cabe
         if (y + blockH > H - 16) {
           doc.addPage();
           doc.setFillColor(C.bg[0], C.bg[1], C.bg[2]);
@@ -709,18 +722,15 @@ function exportMonthPDF() {
           y = 20;
         }
 
-        // Card del día
         doc.setFillColor(C.surface[0], C.surface[1], C.surface[2]);
         doc.roundedRect(margin, y - 3, W - margin * 2, blockH, 2.5, 2.5, "F");
         doc.setDrawColor(C.line[0], C.line[1], C.line[2]);
         doc.setLineWidth(0.15);
         doc.roundedRect(margin, y - 3, W - margin * 2, blockH, 2.5, 2.5, "S");
 
-        // Barra lateral accent
         doc.setFillColor(C.accent[0], C.accent[1], C.accent[2]);
         doc.roundedRect(margin, y - 3, 2.5, blockH, 1, 1, "F");
 
-        // Nombre del día
         doc.setFont("helvetica", "bold");
         doc.setFontSize(9);
         doc.setCharSpace(0);
@@ -728,7 +738,6 @@ function exportMonthPDF() {
         doc.text(label, margin + 7, y + 1.5);
         y += 6;
 
-        // Canciones
         if (songs3.length) {
           songs3.forEach(function (s) {
             var title = (s.title || s);
@@ -747,7 +756,6 @@ function exportMonthPDF() {
           });
         }
 
-        // Ministros
         if (mins3.length) {
           doc.setFont("helvetica", "normal");
           doc.setFontSize(7.5);
@@ -761,7 +769,6 @@ function exportMonthPDF() {
           });
         }
 
-        // Notas
         if (noteLines.length) {
           doc.setFont("helvetica", "italic");
           doc.setFontSize(7);
@@ -783,7 +790,6 @@ function exportMonthPDF() {
       doc.text("No hay datos para este mes.", margin, y + 10);
     }
 
-    // Footer en cada página
     var totalPages = doc.getNumberOfPages();
     for (var p = 1; p <= totalPages; p++) {
       doc.setPage(p);

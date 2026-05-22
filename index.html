@@ -1,194 +1,194 @@
-<!doctype html>
-<html lang="es">
+  <!doctype html>
+  <html lang="es">
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calendario · Group Zoé</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calendario · Group Zoé</title>
 
-  <meta name="title" content="Calendario · Group Zoé" />
-  <meta name="description"
-    content="Calendario del ministerio de alabanza Group Zoé · Aliento de Vida. Organización de canciones, músicos y ministración." />
+    <meta name="title" content="Calendario · Group Zoé" />
+    <meta name="description"
+      content="Calendario del ministerio de alabanza Group Zoé · Aliento de Vida. Organización de canciones, músicos y ministración." />
 
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://calendariozoe.space/" />
-  <meta property="og:title" content="Calendario · Group Zoé" />
-  <meta property="og:description" content="Calendario del ministerio de alabanza Group Zoé · Aliento de Vida." />
-  <meta property="og:image" content="https://calendariozoe.space/assets/images/preview.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://calendariozoe.space/" />
+    <meta property="og:title" content="Calendario · Group Zoé" />
+    <meta property="og:description" content="Calendario del ministerio de alabanza Group Zoé · Aliento de Vida." />
+    <meta property="og:image" content="https://calendariozoe.space/assets/images/preview.png" />
 
-  <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:url" content="https://calendariozoe.space/" />
-  <meta property="twitter:title" content="Calendario · Group Zoé" />
-  <meta property="twitter:description" content="Calendario del ministerio de alabanza Group Zoé · Aliento de Vida." />
-  <meta property="twitter:image" content="https://calendariozoe.space/assets/images/preview.png" />
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://calendariozoe.space/" />
+    <meta property="twitter:title" content="Calendario · Group Zoé" />
+    <meta property="twitter:description" content="Calendario del ministerio de alabanza Group Zoé · Aliento de Vida." />
+    <meta property="twitter:image" content="https://calendariozoe.space/assets/images/preview.png" />
 
-  <meta name="theme-color" content="#0f172a" />
+    <meta name="theme-color" content="#0f172a" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap"
-    rel="stylesheet" />
-  <link rel="stylesheet" href="assets/styles.css" />
-  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet" />
+    <link rel="stylesheet" href="assets/styles.css" />
+    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
-  <link rel="icon" type="image/x-icon" href="assets/images/favicon_io/favicon.ico" />
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon_io/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon_io/favicon-16x16.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/images/favicon_io/apple-touch-icon.png" />
-  <link rel="manifest" href="assets/images/favicon_io/site.webmanifest" />
-</head>
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon_io/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon_io/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon_io/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/favicon_io/apple-touch-icon.png" />
+    <link rel="manifest" href="assets/images/favicon_io/site.webmanifest" />
+  </head>
 
-<body>
-  <div id="status-bar">Conectando…</div>
+  <body>
+    <div id="status-bar">Conectando…</div>
 
-  <header>
-    <div class="header-brand">
-      <div class="brand-icon">
-        <img src="/assets/images/logo.png" alt="Logo" />
-      </div>
-      <div class="brand-text">
-        <h1>Group Zoé · Aliento de Vida</h1>
-        <p>Calendario de Ministerio</p>
-      </div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <button class="btn-theme" id="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
-      <button class="btn-outline" id="members-btn" onclick="openMembersModal()" style="display:none">
-        <svg width="15" height="15" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM6 8a2 2 0 11-4 0 2 2 0 014 0zM1 18v-1a7 7 0 0114 0v1H1zM19 18v-1a5 5 0 00-4-4.9M5 13.1A5 5 0 001 18v1"
-            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-        Equipo
-      </button>
-      <button class="btn-outline" id="admin-btn" onclick="openLoginModal()">🔒 Admin</button>
-    </div>
-  </header>
-
-  <!-- MEMBERS MODAL -->
-  <div id="members-modal">
-    <div class="modal-box">
-      <h3>Gestionar Equipo</h3>
-      <div class="add-row" style="margin-bottom:14px">
-        <input id="new-member-name" placeholder="Nombre completo" />
-        <input id="new-member-instr" placeholder="Instrumento" style="flex:0.7" />
-        <button onclick="addMember()">+</button>
-      </div>
-      <div id="modal-member-list"></div>
-      <button class="btn-close-modal" onclick="closeMembersModal()">Cerrar</button>
-    </div>
-  </div>
-
-  <!-- LOGIN MODAL -->
-  <div id="login-modal">
-    <div class="modal-box">
-      <h3>Acceso Administrador</h3>
-      <p style="font-size:13px;color:var(--text-3);margin-bottom:16px">Ingresa la contraseña para habilitar la edición.
-      </p>
-      <input type="password" id="login-password" placeholder="Contraseña"
-        style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);font-family:inherit;font-size:13px;color:var(--text);outline:none;margin-bottom:10px;box-sizing:border-box"
-        onkeydown="if(event.key==='Enter')submitLogin()" />
-      <p id="login-error" style="font-size:12px;color:var(--danger);margin-bottom:10px;display:none">Contraseña
-        incorrecta.</p>
-      <div style="display:flex;gap:8px">
-        <button class="btn-close-modal" onclick="closeLoginModal()" style="flex:1">Cancelar</button>
-        <button class="btn-save" onclick="submitLogin()" style="flex:1">Entrar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- CONFIRM MODAL -->
-  <div id="confirm-modal">
-    <div class="confirm-box">
-      <p id="confirm-msg">¿Seguro que deseas eliminar esto?</p>
-      <div class="confirm-actions">
-        <button class="btn-cancel-confirm" onclick="closeConfirm()">Cancelar</button>
-        <button class="btn-ok-confirm" id="confirm-ok">Eliminar</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="main">
-    <!-- CALENDAR -->
-    <div class="calendar-card">
-      <div class="cal-header">
-        <div class="cal-nav">
-          <button onclick="changeMonth(-1)">&#8249;</button>
-          <div class="cal-month" id="cal-month-label">Cargando…</div>
-          <button onclick="changeMonth(1)">&#8250;</button>
+    <header>
+      <div class="header-brand">
+        <div class="brand-icon">
+          <img src="/assets/images/logo.png" alt="Logo" />
+        </div>
+        <div class="brand-text">
+          <h1>Group Zoé · Aliento de Vida</h1>
+          <p>Calendario de Ministerio</p>
         </div>
       </div>
-      <div class="cal-grid" id="cal-dow"></div>
-      <div class="cal-grid" id="cal-days"></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="btn-theme" id="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
+        <button class="btn-outline" id="members-btn" onclick="openMembersModal()" style="display:none">
+          <svg width="15" height="15" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM6 8a2 2 0 11-4 0 2 2 0 014 0zM1 18v-1a7 7 0 0114 0v1H1zM19 18v-1a5 5 0 00-4-4.9M5 13.1A5 5 0 001 18v1"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          Equipo
+        </button>
+        <button class="btn-outline" id="admin-btn" onclick="openLoginModal()">🔒 Adm.</button>
+      </div>
+    </header>
+
+    <!-- MEMBERS MODAL -->
+    <div id="members-modal">
+      <div class="modal-box">
+        <h3>Gestionar Equipo</h3>
+        <div class="add-row" style="margin-bottom:14px">
+          <input id="new-member-name" placeholder="Nombre completo" />
+          <input id="new-member-instr" placeholder="Instrumento" style="flex:0.7" />
+          <button onclick="addMember()">+</button>
+        </div>
+        <div id="modal-member-list"></div>
+        <button class="btn-close-modal" onclick="closeMembersModal()">Cerrar</button>
+      </div>
     </div>
 
-    <!-- SIDE PANEL -->
-    <div class="side-panel">
-
-      <!-- DAY DETAIL -->
-      <div class="panel-card">
-        <div class="panel-header">
-          <h3>Detalle del Día</h3>
-          <span class="date-label" id="detail-date">—</span>
+    <!-- LOGIN MODAL -->
+    <div id="login-modal">
+      <div class="modal-box">
+        <h3>Acceso Administrador</h3>
+        <p style="font-size:13px;color:var(--text-3);margin-bottom:16px">Ingresa la contraseña para habilitar la edición.
+        </p>
+        <input type="password" id="login-password" placeholder="Contraseña"
+          style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);font-family:inherit;font-size:13px;color:var(--text);outline:none;margin-bottom:10px;box-sizing:border-box"
+          onkeydown="if(event.key==='Enter')submitLogin()" />
+        <p id="login-error" style="font-size:12px;color:var(--danger);margin-bottom:10px;display:none">Contraseña
+          incorrecta.</p>
+        <div style="display:flex;gap:8px">
+          <button class="btn-close-modal" onclick="closeLoginModal()" style="flex:1">Cancelar</button>
+          <button class="btn-save" onclick="submitLogin()" style="flex:1">Entrar</button>
         </div>
-        <div class="panel-body" id="detail-body">
-          <div class="no-selection">
-            <div class="icon">🗓</div>
-            <p>Selecciona un día para ver el programa.</p>
+      </div>
+    </div>
+
+    <!-- CONFIRM MODAL -->
+    <div id="confirm-modal">
+      <div class="confirm-box">
+        <p id="confirm-msg">¿Seguro que deseas eliminar esto?</p>
+        <div class="confirm-actions">
+          <button class="btn-cancel-confirm" onclick="closeConfirm()">Cancelar</button>
+          <button class="btn-ok-confirm" id="confirm-ok">Eliminar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <!-- CALENDAR -->
+      <div class="calendar-card">
+        <div class="cal-header">
+          <div class="cal-nav">
+            <button onclick="changeMonth(-1)">&#8249;</button>
+            <div class="cal-month" id="cal-month-label">Cargando…</div>
+            <button onclick="changeMonth(1)">&#8250;</button>
           </div>
         </div>
+        <div class="cal-grid" id="cal-dow"></div>
+        <div class="cal-grid" id="cal-days"></div>
       </div>
 
-      <!-- TEAM CARD -->
-      <div class="panel-card" id="team-card">
-        <div class="panel-header" onclick="toggleTeam()" style="cursor:pointer;user-select:none">
-          <h3>Equipo</h3>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span style="font-size:11px;color:var(--text-3)" id="member-count">0 miembros</span>
-            <svg id="team-chevron" width="14" height="14" viewBox="0 0 20 20" fill="none"
-              style="color:var(--text-3);transition:transform 0.25s;transform:rotate(180deg)">
-              <path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                stroke-linejoin="round" />
-            </svg>
+      <!-- SIDE PANEL -->
+      <div class="side-panel">
+
+        <!-- DAY DETAIL -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3>Detalle del Día</h3>
+            <span class="date-label" id="detail-date">—</span>
           </div>
-        </div>
-        <div id="team-collapsible" style="overflow:hidden;transition:max-height 0.3s ease;max-height:0px;">
-          <div id="team-mini-list" class="team-grid">
-            <div class="no-members" style="grid-column:span 2">
-              Agrega miembros con el botón "Equipo"
+          <div class="panel-body" id="detail-body">
+            <div class="no-selection">
+              <div class="icon">🗓</div>
+              <p>Selecciona un día para ver el programa.</p>
             </div>
           </div>
         </div>
+
+        <!-- TEAM CARD -->
+        <div class="panel-card" id="team-card">
+          <div class="panel-header" onclick="toggleTeam()" style="cursor:pointer;user-select:none">
+            <h3>Equipo</h3>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:11px;color:var(--text-3)" id="member-count">0 miembros</span>
+              <svg id="team-chevron" width="14" height="14" viewBox="0 0 20 20" fill="none"
+                style="color:var(--text-3);transition:transform 0.25s;transform:rotate(180deg)">
+                <path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </div>
+          </div>
+          <div id="team-collapsible" style="overflow:hidden;transition:max-height 0.3s ease;max-height:0px;">
+            <div id="team-mini-list" class="team-grid">
+              <div class="no-members" style="grid-column:span 2">
+                Agrega miembros con el botón "Equipo"
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
-
     </div>
-  </div>
 
-  <div id="toast"></div>
-  <script src="/script.js"></script>
-  <script>
-    (function () {
-      var saved = localStorage.getItem("theme");
-      if (saved === "dark") {
-        document.documentElement.setAttribute("data-theme", "dark");
-        document.getElementById("theme-toggle").textContent = "☀️";
+    <div id="toast"></div>
+    <script src="/script.js"></script>
+    <script>
+      (function () {
+        var saved = localStorage.getItem("theme");
+        if (saved === "dark") {
+          document.documentElement.setAttribute("data-theme", "dark");
+          document.getElementById("theme-toggle").textContent = "☀️";
+        }
+      })();
+
+      function toggleTheme() {
+        var isDark = document.documentElement.getAttribute("data-theme") === "dark";
+        var btn = document.getElementById("theme-toggle");
+        if (isDark) {
+          document.documentElement.removeAttribute("data-theme");
+          localStorage.setItem("theme", "light");
+          btn.textContent = "🌙";
+        } else {
+          document.documentElement.setAttribute("data-theme", "dark");
+          localStorage.setItem("theme", "dark");
+          btn.textContent = "☀️";
+        }
       }
-    })();
+    </script>
+  </body>
 
-    function toggleTheme() {
-      var isDark = document.documentElement.getAttribute("data-theme") === "dark";
-      var btn = document.getElementById("theme-toggle");
-      if (isDark) {
-        document.documentElement.removeAttribute("data-theme");
-        localStorage.setItem("theme", "light");
-        btn.textContent = "🌙";
-      } else {
-        document.documentElement.setAttribute("data-theme", "dark");
-        localStorage.setItem("theme", "dark");
-        btn.textContent = "☀️";
-      }
-    }
-  </script>
-</body>
-
-</html>
+  </html>

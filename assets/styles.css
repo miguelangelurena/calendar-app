@@ -97,6 +97,9 @@ body {
   color: var(--text-3);
   letter-spacing: 0.01em;
   border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  max-height: 40px;
+  transition: opacity 0.5s, max-height 0.5s ease, padding 0.5s ease, border 0.5s ease;
 }
 
 #status-bar.ok {
@@ -677,7 +680,6 @@ header {
   padding: 20px;
   backdrop-filter: blur(4px);
   cursor: pointer;
-  /* indica que se puede cerrar al hacer clic fuera */
 }
 
 #members-modal.open,
@@ -696,7 +698,6 @@ header {
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--border);
   cursor: default;
-  /* evita que el clic dentro cierre el modal */
 }
 
 .modal-box h3 {
@@ -779,10 +780,6 @@ header {
     padding: 12px;
     gap: 12px;
   }
-
-  .side-panel {
-    /* On mobile, show panel below calendar naturally */
-  }
 }
 
 @media (max-width: 640px) {
@@ -800,7 +797,6 @@ header {
     gap: 10px;
   }
 
-  /* Calendar */
   .cal-header {
     padding: 12px 14px;
   }
@@ -830,7 +826,6 @@ header {
     padding: 8px 2px;
   }
 
-  /* Panel */
   .panel-body {
     padding: 12px 14px;
   }
@@ -839,7 +834,6 @@ header {
     padding: 12px 14px;
   }
 
-  /* Add row — stack URL input below on mobile */
   .add-row {
     flex-wrap: wrap;
   }
@@ -858,13 +852,11 @@ header {
     order: 2;
   }
 
-  /* Minister select takes full row */
   .add-row select {
     flex: 1;
     min-width: 0;
   }
 
-  /* Team grid single column on very small screens */
   .team-grid {
     grid-template-columns: 1fr;
   }
@@ -878,6 +870,11 @@ header {
     right: 16px;
     left: 16px;
     text-align: center;
+  }
+
+  /* Ocultar texto "PDF" en móvil, solo mostrar ícono */
+  #export-btn span {
+    display: none;
   }
 }
 

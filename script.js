@@ -108,8 +108,26 @@ var members = [];
 // ── STATUS BAR ──────────────────────────────────────────────
 function setStatus(msg, type) {
   var el = document.getElementById("status-bar");
+  // Resetear transiciones por si estaba oculto
+  el.style.transition = "none";
+  el.style.opacity = "1";
+  el.style.maxHeight = "40px";
+  el.style.padding = "7px 16px";
+  el.style.borderBottom = "";
   el.textContent = msg;
   el.className = type || "";
+
+  // Auto-ocultar después de 5s si es ok o neutro (no errores)
+  if (type !== "err") {
+    clearTimeout(window._statusTimer);
+    window._statusTimer = setTimeout(function () {
+      el.style.transition = "opacity 0.5s, max-height 0.6s ease, padding 0.6s ease, border 0.6s ease";
+      el.style.opacity = "0";
+      el.style.maxHeight = "0";
+      el.style.padding = "0";
+      el.style.borderBottom = "none";
+    }, 5000);
+  }
 }
 
 // ── TOAST ────────────────────────────────────────────────────
@@ -550,3 +568,295 @@ document.getElementById('members-modal').addEventListener('click', function (e) 
 document.getElementById('login-modal').addEventListener('click', function (e) {
   if (e.target === this) closeLoginModal();
 });
+
+// ── EXPORT PDF ────────────────────────────────────────────────
+function exportMonthPDF() {
+  function runExport() {
+    var jsPDF = window.jspdf.jsPDF;
+    var year = currentDate.getFullYear();
+    var month = currentDate.getMonth();
+    var monthName = MONTHS[month];
+    var daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    var doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    var W = 210, H = 297;
+    var margin = 16;
+
+    // ── Colores
+    var C = {
+      bg: [250, 249, 248],
+      surface: [255, 255, 255],
+      line: [231, 229, 228],
+      text: [28, 25, 23],
+      text2: [87, 83, 78],
+      text3: [168, 162, 158],
+      accent: [68, 64, 60],
+      white: [255, 255, 255],
+      muted: [200, 197, 194],
+    };
+
+    // ── Fondo general
+    doc.setFillColor(C.bg[0], C.bg[1], C.bg[2]);
+    doc.rect(0, 0, W, H, "F");
+
+    // ── Header strip
+    doc.setFillColor(C.accent[0], C.accent[1], C.accent[2]);
+    doc.rect(0, 0, W, 26, "F");
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.setTextColor(C.white[0], C.white[1], C.white[2]);
+    doc.text("Group Zoé · Calendario de Ministerio", margin, 10.5);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(C.muted[0], C.muted[1], C.muted[2]);
+    doc.text(monthName + " " + year, margin, 18);
+
+    var now = new Date();
+    var exportStr = pad(now.getDate()) + "/" + pad(now.getMonth() + 1) + "/" + now.getFullYear();
+    doc.setFontSize(8);
+    doc.text("Exportado: " + exportStr, W - margin, 18, { align: "right" });
+
+    var y = 34;
+
+    // ── Cabecera días semana
+    var colW = (W - margin * 2) / 7;
+    var dowLabels = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+    doc.setFontSize(7);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(C.text3[0], C.text3[1], C.text3[2]);
+    for (var di = 0; di < 7; di++) {
+      doc.text(dowLabels[di], margin + di * colW + colW / 2, y, { align: "center" });
+    }
+    y += 3.5;
+
+    doc.setDrawColor(C.line[0], C.line[1], C.line[2]);
+    doc.setLineWidth(0.25);
+    doc.line(margin, y, W - margin, y);
+    y += 2.5;
+
+    // ── Grid del calendario
+    var cellH = 24;
+    var firstDay = new Date(year, month, 1).getDay();
+    var totalCells = firstDay + daysInMonth;
+    var rows = Math.ceil(totalCells / 7);
+    var todayStr = now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate());
+
+    // Dibujar fondos de celdas con datos
+    for (var row = 0; row < rows; row++) {
+      for (var col = 0; col < 7; col++) {
+        var cellIndex = row * 7 + col;
+        var dayNum = cellIndex - firstDay + 1;
+        if (dayNum < 1 || dayNum > daysInMonth) continue;
+        var dateStr = year + "-" + pad(month + 1) + "-" + pad(dayNum);
+        var sched = scheduleData[dateStr];
+        var cx = margin + col * colW;
+        var cy = y + row * cellH;
+
+        if (sched && ((sched.songs && JSON.parse(sched.songs).length) ||
+          (sched.ministers && JSON.parse(sched.ministers).length))) {
+          doc.setFillColor(C.surface[0], C.surface[1], C.surface[2]);
+          doc.roundedRect(cx + 0.5, cy + 0.5, colW - 1, cellH - 1, 1.5, 1.5, "F");
+          doc.setDrawColor(C.line[0], C.line[1], C.line[2]);
+          doc.setLineWidth(0.15);
+          doc.roundedRect(cx + 0.5, cy + 0.5, colW - 1, cellH - 1, 1.5, 1.5, "S");
+        }
+      }
+    }
+
+    // Líneas horizontales de la grilla
+    doc.setDrawColor(C.line[0], C.line[1], C.line[2]);
+    doc.setLineWidth(0.2);
+    for (var r = 0; r <= rows; r++) {
+      doc.line(margin, y + r * cellH, W - margin, y + r * cellH);
+    }
+    // Líneas verticales
+    for (var v = 0; v <= 7; v++) {
+      doc.line(margin + v * colW, y, margin + v * colW, y + rows * cellH);
+    }
+
+    // Contenido de cada celda
+    for (var row2 = 0; row2 < rows; row2++) {
+      for (var col2 = 0; col2 < 7; col2++) {
+        var cellIndex2 = row2 * 7 + col2;
+        var dayNum2 = cellIndex2 - firstDay + 1;
+        if (dayNum2 < 1 || dayNum2 > daysInMonth) continue;
+        var dateStr2 = year + "-" + pad(month + 1) + "-" + pad(dayNum2);
+        var cx2 = margin + col2 * colW;
+        var cy2 = y + row2 * cellH;
+        var sched2 = scheduleData[dateStr2];
+        var isToday2 = dateStr2 === todayStr;
+
+        // Número del día
+        if (isToday2) {
+          doc.setFillColor(C.accent[0], C.accent[1], C.accent[2]);
+          doc.circle(cx2 + colW / 2, cy2 + 4.2, 3, "F");
+          doc.setTextColor(C.white[0], C.white[1], C.white[2]);
+        } else {
+          doc.setTextColor(C.text2[0], C.text2[1], C.text2[2]);
+        }
+        doc.setFont("helvetica", isToday2 ? "bold" : "normal");
+        doc.setFontSize(8);
+        doc.text(String(dayNum2), cx2 + colW / 2, cy2 + 5.2, { align: "center" });
+
+        // Mini contenido
+        if (sched2) {
+          var songs2 = sched2.songs ? JSON.parse(sched2.songs) : [];
+          var mins2 = sched2.ministers ? JSON.parse(sched2.ministers) : [];
+          var lineY2 = cy2 + 9.5;
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(5.5);
+
+          songs2.slice(0, 2).forEach(function (s) {
+            if (lineY2 > cy2 + cellH - 2) return;
+            doc.setTextColor(C.text2[0], C.text2[1], C.text2[2]);
+            var t = (s.title || s);
+            if (t.length > 13) t = t.substring(0, 12) + "…";
+            doc.text(t, cx2 + 2, lineY2);
+            lineY2 += 3.5;
+          });
+
+          mins2.slice(0, 1).forEach(function (m) {
+            if (lineY2 > cy2 + cellH - 2) return;
+            doc.setTextColor(C.text3[0], C.text3[1], C.text3[2]);
+            var n = m.name;
+            if (n.length > 13) n = n.substring(0, 12) + "…";
+            doc.text(n, cx2 + 2, lineY2);
+          });
+        }
+      }
+    }
+
+    y += rows * cellH + 12;
+
+    // ── Sección de detalle
+    var daysWithData = [];
+    for (var d2 = 1; d2 <= daysInMonth; d2++) {
+      var ds = year + "-" + pad(month + 1) + "-" + pad(d2);
+      var sd = scheduleData[ds];
+      if (sd && (
+        (sd.songs && JSON.parse(sd.songs).length) ||
+        (sd.ministers && JSON.parse(sd.ministers).length) ||
+        sd.notes
+      )) daysWithData.push(ds);
+    }
+
+    if (daysWithData.length > 0) {
+      // Título sección
+      doc.setFillColor(C.accent[0], C.accent[1], C.accent[2]);
+      doc.rect(margin, y, W - margin * 2, 0.35, "F");
+      y += 5;
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.setTextColor(C.text3[0], C.text3[1], C.text3[2]);
+      doc.text("DETALLE DEL MES", margin, y);
+      y += 6;
+
+      daysWithData.forEach(function (ds) {
+        var parts = ds.split("-");
+        var dDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+        var label = DAYS[dDate.getDay()] + " " + parseInt(parts[2]) + " de " + MONTHS[parseInt(parts[1]) - 1];
+        var sd2 = scheduleData[ds];
+        var songs3 = sd2.songs ? JSON.parse(sd2.songs) : [];
+        var mins3 = sd2.ministers ? JSON.parse(sd2.ministers) : [];
+        var notes3 = sd2.notes || "";
+        var noteLines = notes3 ? doc.splitTextToSize(notes3, W - margin * 2 - 12).slice(0, 3) : [];
+
+        var blockH = 7 + songs3.length * 5 + mins3.length * 5 + noteLines.length * 4 + 5;
+
+        // Nueva página si no cabe
+        if (y + blockH > H - 16) {
+          doc.addPage();
+          doc.setFillColor(C.bg[0], C.bg[1], C.bg[2]);
+          doc.rect(0, 0, W, H, "F");
+          y = 20;
+        }
+
+        // Card del día
+        doc.setFillColor(C.surface[0], C.surface[1], C.surface[2]);
+        doc.roundedRect(margin, y - 3, W - margin * 2, blockH, 2.5, 2.5, "F");
+        doc.setDrawColor(C.line[0], C.line[1], C.line[2]);
+        doc.setLineWidth(0.15);
+        doc.roundedRect(margin, y - 3, W - margin * 2, blockH, 2.5, 2.5, "S");
+
+        // Barra lateral accent
+        doc.setFillColor(C.accent[0], C.accent[1], C.accent[2]);
+        doc.roundedRect(margin, y - 3, 2.5, blockH, 1, 1, "F");
+
+        // Nombre del día
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.setTextColor(C.text[0], C.text[1], C.text[2]);
+        doc.text(label, margin + 7, y + 1.5);
+        y += 6;
+
+        // Canciones
+        if (songs3.length) {
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(7.5);
+          doc.setTextColor(C.text2[0], C.text2[1], C.text2[2]);
+          songs3.forEach(function (s) {
+            doc.text("♪  " + (s.title || s), margin + 7, y);
+            y += 5;
+          });
+        }
+
+        // Ministros
+        if (mins3.length) {
+          doc.setFontSize(7.5);
+          doc.setTextColor(C.text3[0], C.text3[1], C.text3[2]);
+          mins3.forEach(function (m) {
+            var line = "·  " + m.name;
+            if (m.instrument) line += "  —  " + m.instrument;
+            doc.text(line, margin + 7, y);
+            y += 5;
+          });
+        }
+
+        // Notas
+        if (noteLines.length) {
+          doc.setFontSize(7);
+          doc.setTextColor(C.text3[0], C.text3[1], C.text3[2]);
+          noteLines.forEach(function (ln) {
+            doc.text(ln, margin + 7, y);
+            y += 4;
+          });
+        }
+
+        y += 8;
+      });
+    }
+
+    // ── Footer en cada página
+    var totalPages = doc.getNumberOfPages();
+    for (var p = 1; p <= totalPages; p++) {
+      doc.setPage(p);
+      doc.setFillColor(C.accent[0], C.accent[1], C.accent[2]);
+      doc.rect(0, H - 10, W, 10, "F");
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7);
+      doc.setTextColor(C.muted[0], C.muted[1], C.muted[2]);
+      doc.text(
+        "Group Zoé · Aliento de Vida · " + monthName + " " + year + "   |   Pág. " + p + " de " + totalPages,
+        W / 2, H - 3.5, { align: "center" }
+      );
+    }
+
+    doc.save("GroupZoe_" + monthName + "_" + year + ".pdf");
+    toast("PDF exportado ✓");
+  }
+
+  // Cargar jsPDF dinámicamente si no está disponible
+  if (window.jspdf && window.jspdf.jsPDF) {
+    runExport();
+  } else {
+    toast("Preparando PDF…");
+    var script = document.createElement("script");
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+    script.onload = function () { runExport(); };
+    script.onerror = function () { toast("Error al cargar jsPDF. Verifica tu conexión."); };
+    document.head.appendChild(script);
+  }
+}

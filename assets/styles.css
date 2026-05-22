@@ -1085,17 +1085,110 @@ header {
 }
 
 /* ── MEMBER CHECKBOXES ── */
+/* ── MEMBER PICKER TOGGLE ── */
+.btn-toggle-members {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 6px;
+  padding: 7px 12px;
+  background: transparent;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-3);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.15s;
+}
+
+.btn-toggle-members:hover {
+  background: var(--surface-2);
+  color: var(--text-2);
+  border-color: var(--text-3);
+}
+
+.btn-toggle-members.open {
+  background: var(--accent-bg);
+  border-color: var(--border-strong);
+  border-style: solid;
+  color: var(--text);
+}
+
+.btn-toggle-members svg {
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-toggle-members.open svg {
+  transform: rotate(45deg);
+  /* + se convierte en × */
+}
+
 .member-checkbox-list {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  margin-top: 6px;
-  max-height: 220px;
-  overflow-y: auto;
+  margin-top: 4px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 4px;
   background: var(--surface);
+  max-height: 220px;
+  overflow-y: auto;
+  transition: max-height 0.25s ease, opacity 0.2s ease, margin 0.2s ease;
+}
+
+.member-checkbox-list.collapsed {
+  max-height: 0;
+  opacity: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.member-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.12s;
+  user-select: none;
+}
+
+.member-checkbox-row:hover {
+  background: var(--surface-2);
+}
+
+.member-checkbox-row.checked {
+  background: var(--accent-bg);
+}
+
+.member-checkbox-row input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.mcb-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  flex: 1;
+}
+
+.mcb-instr {
+  font-size: 11px;
+  color: var(--text-3);
+  flex-shrink: 0;
 }
 
 .member-checkbox-row {

@@ -311,8 +311,12 @@ function renderDetail(dateStr) {
 
     '<div class="section-label">Ministros</div>' +
     '<ul class="section-list" id="ministers-list"></ul>' +
-    '<div class="member-checkbox-list admin-only" id="minister-checkboxes">' +
-    renderMemberCheckboxes(mins, dateStr) +
+    '<div class="admin-only">' +
+    '<button class="btn-toggle-members" id="toggle-members-btn" onclick="toggleMemberPicker()">' +
+    '<svg width="13" height="13" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
+    'Agregar ministro' +
+    '</button>' +
+    '<div class="member-checkbox-list collapsed" id="minister-checkboxes"></div>' +
     '</div>' +
 
     '<div class="section-divider"></div>' +
@@ -459,7 +463,26 @@ function renderMemberCheckboxes(currentMins, dateStr) {
 
 function renderMemberCheckboxes_update(mins, dateStr) {
   var el = document.getElementById('minister-checkboxes');
-  if (el) el.innerHTML = renderMemberCheckboxes(mins, dateStr);
+  if (el && !el.classList.contains('collapsed')) {
+    el.innerHTML = renderMemberCheckboxes(mins, dateStr);
+  }
+}
+
+function toggleMemberPicker() {
+  var list = document.getElementById('minister-checkboxes');
+  var btn = document.getElementById('toggle-members-btn');
+  if (!list) return;
+  var isOpen = !list.classList.contains('collapsed');
+  if (isOpen) {
+    list.classList.add('collapsed');
+    btn.classList.remove('open');
+  } else {
+    var sched = scheduleData[selectedDate] || {};
+    var mins = sched.ministers ? JSON.parse(sched.ministers) : [];
+    list.innerHTML = renderMemberCheckboxes(mins, selectedDate);
+    list.classList.remove('collapsed');
+    btn.classList.add('open');
+  }
 }
 
 // ── NOTES ─────────────────────────────────────────────────────

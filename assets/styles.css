@@ -665,7 +665,8 @@ header {
 }
 
 /* MODAL */
-#members-modal {
+#members-modal,
+#login-modal {
   display: none;
   position: fixed;
   inset: 0;
@@ -675,30 +676,35 @@ header {
   justify-content: center;
   padding: 20px;
   backdrop-filter: blur(4px);
+  cursor: pointer;
+  /* indica que se puede cerrar al hacer clic fuera */
 }
 
-#members-modal.open {
+#members-modal.open,
+#login-modal.open {
   display: flex;
 }
 
 .modal-box {
   background: var(--surface);
   border-radius: var(--radius-lg);
-  padding: 24px;
-  max-width: 480px;
+  padding: 22px 24px;
+  max-width: 460px;
   width: 100%;
   max-height: 82vh;
   overflow-y: auto;
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--border);
+  cursor: default;
+  /* evita que el clic dentro cierre el modal */
 }
 
 .modal-box h3 {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   color: var(--text);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .modal-member-row {
@@ -724,16 +730,16 @@ header {
 }
 
 .btn-close-modal {
-  margin-top: 12px;
+  margin-top: 14px;
   background: var(--bg);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
+  color: var(--text-2);
   border-radius: var(--radius-sm);
-  padding: 10px 16px;
+  padding: 9px 16px;
   font-family: inherit;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  color: var(--text-2);
   width: 100%;
   transition: all 0.15s;
 }

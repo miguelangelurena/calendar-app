@@ -542,3 +542,11 @@ function renderMembersModal() {
     );
   }).join("");
 }
+
+// ── CERRAR MODALES AL HACER CLIC FUERA ──────────────────────
+document.getElementById('members-modal').addEventListener('click', function (e) {
+  if (e.target === this) closeMembersModal();
+});
+document.getElementById('login-modal').addEventListener('click', function (e) {
+  if (e.target === this) closeLoginModal();
+});

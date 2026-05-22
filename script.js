@@ -172,8 +172,8 @@ function renderDetail(dateStr) {
     '<div class="section-label">Canciones</div>' +
     '<ul class="section-list" id="songs-list"></ul>' +
     '<div class="add-row">' +
-      '<input id="new-song" placeholder="Título de la canción" />' +
-      '<input id="new-song-url" placeholder="Link YouTube (opcional)" />' +
+      '<input id="new-song" placeholder="Título de canción" />' +
+      '<input id="new-song-url" placeholder="Link YouTube" />' +
       '<button onclick="addSong(\'' + dateStr + '\')">+</button>' +
     '</div>' +
 

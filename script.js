@@ -611,7 +611,7 @@ function exportMonthPDF() {
       accent: [68, 64, 60],
       white: [255, 255, 255],
       muted: [200, 197, 194],
-      link: [59, 130, 246],
+      link: [68, 64, 60],
     };
 
     // Fondo general

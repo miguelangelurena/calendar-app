@@ -6,19 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calendario · Group Zoé</title>
 
-  <!-- Primary Meta Tags -->
   <meta name="title" content="Calendario · Group Zoé" />
   <meta name="description"
     content="Calendario del ministerio de alabanza Group Zoé · Aliento de Vida. Organización de canciones, músicos y ministración." />
 
-  <!-- Open Graph / Facebook / WhatsApp -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://calendariozoe.space/" />
   <meta property="og:title" content="Calendario · Group Zoé" />
   <meta property="og:description" content="Calendario del ministerio de alabanza Group Zoé · Aliento de Vida." />
   <meta property="og:image" content="https://calendariozoe.space/assets/images/preview.png" />
 
-  <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image" />
   <meta property="twitter:url" content="https://calendariozoe.space/" />
   <meta property="twitter:title" content="Calendario · Group Zoé" />
@@ -56,7 +53,7 @@
     </div>
     <div style="display:flex;align-items:center;gap:8px">
       <button class="btn-theme" id="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
-      <button class="btn-outline" onclick="openMembersModal()">
+      <button class="btn-outline" id="members-btn" onclick="openMembersModal()" style="display:none">
         <svg width="15" height="15" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
             d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM6 8a2 2 0 11-4 0 2 2 0 014 0zM1 18v-1a7 7 0 0114 0v1H1zM19 18v-1a5 5 0 00-4-4.9M5 13.1A5 5 0 001 18v1"
@@ -64,6 +61,7 @@
         </svg>
         Equipo
       </button>
+      <button class="btn-outline" id="admin-btn" onclick="openLoginModal()">🔒 Admin</button>
     </div>
   </header>
 
@@ -78,6 +76,35 @@
       </div>
       <div id="modal-member-list"></div>
       <button class="btn-close-modal" onclick="closeMembersModal()">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- LOGIN MODAL -->
+  <div id="login-modal">
+    <div class="modal-box">
+      <h3>Acceso Administrador</h3>
+      <p style="font-size:13px;color:var(--text-3);margin-bottom:16px">Ingresa la contraseña para habilitar la edición.
+      </p>
+      <input type="password" id="login-password" placeholder="Contraseña"
+        style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);font-family:inherit;font-size:13px;color:var(--text);outline:none;margin-bottom:10px;box-sizing:border-box"
+        onkeydown="if(event.key==='Enter')submitLogin()" />
+      <p id="login-error" style="font-size:12px;color:var(--danger);margin-bottom:10px;display:none">Contraseña
+        incorrecta.</p>
+      <div style="display:flex;gap:8px">
+        <button class="btn-close-modal" onclick="closeLoginModal()" style="flex:1">Cancelar</button>
+        <button class="btn-save" onclick="submitLogin()" style="flex:1">Entrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM MODAL -->
+  <div id="confirm-modal">
+    <div class="confirm-box">
+      <p id="confirm-msg">¿Seguro que deseas eliminar esto?</p>
+      <div class="confirm-actions">
+        <button class="btn-cancel-confirm" onclick="closeConfirm()">Cancelar</button>
+        <button class="btn-ok-confirm" id="confirm-ok">Eliminar</button>
+      </div>
     </div>
   </div>
 
@@ -107,7 +134,7 @@
         <div class="panel-body" id="detail-body">
           <div class="no-selection">
             <div class="icon">🗓</div>
-            <p>Selecciona un día para ver o editar el programa.</p>
+            <p>Selecciona un día para ver el programa.</p>
           </div>
         </div>
       </div>
@@ -137,21 +164,9 @@
     </div>
   </div>
 
-  <!-- CONFIRM MODAL -->
-  <div id="confirm-modal">
-    <div class="confirm-box">
-      <p id="confirm-msg">¿Seguro que deseas eliminar esto?</p>
-      <div class="confirm-actions">
-        <button class="btn-cancel-confirm" onclick="closeConfirm()">Cancelar</button>
-        <button class="btn-ok-confirm" id="confirm-ok">Eliminar</button>
-      </div>
-    </div>
-  </div>
-
   <div id="toast"></div>
   <script src="/script.js"></script>
   <script>
-    // Theme toggle — persists across sessions
     (function () {
       var saved = localStorage.getItem("theme");
       if (saved === "dark") {

@@ -2,6 +2,97 @@ var SB_URL = "https://ilqguzgkemfujrvvhtdp.supabase.co";
 var SB_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlscWd1emdrZW1mdWpydnZodGRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzOTE0MjQsImV4cCI6MjA5NDk2NzQyNH0.Yj1FPDZIsbg8fxrSghFGFGECXQ14hOdiaZB2R61805E";
 
+var ADMIN_HASH = "82f5d75f09f19488de551e88188b21b3a442557dd5f32aef433d284916ba1701";
+
+var isAdmin = false;
+
+async function checkAdminSession() {
+  var stored = localStorage.getItem("admin_token");
+  if (stored && stored === ADMIN_HASH) {
+    isAdmin = true;
+    updateAdminUI();
+  }
+}
+
+async function submitLogin() {
+  var pw = document.getElementById("login-password").value;
+  var errEl = document.getElementById("login-error");
+  errEl.style.display = "none";
+  if (!pw) return;
+  try {
+    var hashBuffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pw));
+    var hashArray = Array.from(new Uint8Array(hashBuffer));
+    var hash = hashArray.map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+    if (hash === ADMIN_HASH) {
+      isAdmin = true;
+      localStorage.setItem("admin_token", hash);
+      closeLoginModal();
+      updateAdminUI();
+      if (selectedDate) renderDetail(selectedDate);
+      toast("Sesión iniciada ✓");
+    } else {
+      errEl.style.display = "block";
+      document.getElementById("login-password").value = "";
+    }
+  } catch (e) {
+    errEl.textContent = "Error al verificar contraseña.";
+    errEl.style.display = "block";
+  }
+}
+
+function logout() {
+  isAdmin = false;
+  localStorage.removeItem("admin_token");
+  updateAdminUI();
+  if (selectedDate) renderDetail(selectedDate);
+  toast("Sesión cerrada");
+}
+
+function updateAdminUI() {
+  var adminBtn = document.getElementById("admin-btn");
+  var membersBtn = document.getElementById("members-btn");
+  if (isAdmin) {
+    adminBtn.textContent = "🔓 Cerrar sesión";
+    adminBtn.onclick = logout;
+    if (membersBtn) membersBtn.style.display = "";
+  } else {
+    adminBtn.textContent = "🔒 Admin";
+    adminBtn.onclick = openLoginModal;
+    if (membersBtn) membersBtn.style.display = "none";
+  }
+  applyAdminVisibility();
+}
+
+function applyAdminVisibility() {
+  var editEls = document.querySelectorAll(".admin-only");
+  editEls.forEach(function (el) {
+    el.style.display = isAdmin ? "" : "none";
+  });
+}
+
+function openLoginModal() {
+  document.getElementById("login-error").style.display = "none";
+  document.getElementById("login-password").value = "";
+  document.getElementById("login-modal").classList.add("open");
+  setTimeout(function () { document.getElementById("login-password").focus(); }, 100);
+}
+function closeLoginModal() {
+  document.getElementById("login-modal").classList.remove("open");
+}
+
+// ── CONFIRM DIALOG ────────────────────────────────────────────
+function confirmAction(msg, onConfirm) {
+  var modal = document.getElementById("confirm-modal");
+  document.getElementById("confirm-msg").textContent = msg;
+  var btn = document.getElementById("confirm-ok");
+  btn.onclick = function () { closeConfirm(); onConfirm(); };
+  modal.classList.add("open");
+}
+function closeConfirm() {
+  document.getElementById("confirm-modal").classList.remove("open");
+}
+
+// ── GLOBALS ───────────────────────────────────────────────────
 var MONTHS = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
@@ -21,18 +112,6 @@ function setStatus(msg, type) {
   el.className = type || "";
 }
 
-// ── CONFIRM DIALOG ────────────────────────────────────────────
-function confirmAction(msg, onConfirm) {
-  var modal = document.getElementById("confirm-modal");
-  document.getElementById("confirm-msg").textContent = msg;
-  var btn = document.getElementById("confirm-ok");
-  btn.onclick = function () { closeConfirm(); onConfirm(); };
-  modal.classList.add("open");
-}
-function closeConfirm() {
-  document.getElementById("confirm-modal").classList.remove("open");
-}
-
 // ── TOAST ────────────────────────────────────────────────────
 function toast(msg) {
   var el = document.getElementById("toast");
@@ -44,6 +123,7 @@ function toast(msg) {
 // ── INIT ─────────────────────────────────────────────────────
 window.addEventListener("load", function () {
   renderCalendar();
+  checkAdminSession();
   if (typeof supabase === "undefined" || !supabase.createClient) {
     setStatus("Error: no se pudo cargar Supabase. Verifica tu conexión.", "err");
     return;
@@ -152,7 +232,6 @@ function selectDate(dateStr) {
   renderCalendar();
   renderDetail(dateStr);
 
-  // On mobile, scroll to the detail panel smoothly
   if (window.innerWidth < 960) {
     var panel = document.querySelector(".side-panel");
     if (panel) {
@@ -183,7 +262,7 @@ function renderDetail(dateStr) {
     // SONGS
     '<div class="section-label">Canciones</div>' +
     '<ul class="section-list" id="songs-list"></ul>' +
-    '<div class="add-row">' +
+    '<div class="add-row admin-only">' +
     '<input id="new-song" placeholder="Título de canción" />' +
     '<input id="new-song-url" placeholder="Link YouTube" />' +
     '<button onclick="addSong(\'' + dateStr + '\')">+</button>' +
@@ -194,7 +273,7 @@ function renderDetail(dateStr) {
     // MINISTERS
     '<div class="section-label">Ministros</div>' +
     '<ul class="section-list" id="ministers-list"></ul>' +
-    '<div class="add-row">' +
+    '<div class="add-row admin-only">' +
     '<select id="new-minister-select">' +
     '<option value="">— Seleccionar —</option>' + memberOptions +
     '</select>' +
@@ -205,13 +284,17 @@ function renderDetail(dateStr) {
 
     // NOTES
     '<div class="section-label">Notas</div>' +
-    '<textarea class="notes-area" id="notes-area" placeholder="Tono, orden del servicio…">' +
+    '<textarea class="notes-area" id="notes-area" placeholder="Tono, orden del servicio…"' +
+    (isAdmin ? '' : ' readonly') + '>' +
     escapeHtml(notes) +
     '</textarea>' +
-    '<button class="btn-save" onclick="saveNotes(\'' + dateStr + '\')">Guardar notas</button>';
+    (isAdmin
+      ? '<button class="btn-save admin-only" onclick="saveNotes(\'' + dateStr + '\')">Guardar notas</button>'
+      : '');
 
   renderSongsList(songs, dateStr);
   renderMinistersList(mins, dateStr);
+  applyAdminVisibility();
 }
 
 function escapeHtml(str) {
@@ -234,11 +317,14 @@ function renderSongsList(songs, dateStr) {
     var ytBtn = s.url
       ? '<a href="' + s.url + '" target="_blank" class="yt-btn">▶</a>'
       : "";
+    var delBtn = isAdmin
+      ? '<button class="item-del admin-only" onclick="removeSong(' + i + ',\'' + dateStr + '\')">×</button>'
+      : "";
     return (
       '<li>' +
       '<span class="item-name">♪ ' + escapeHtml(s.title || s) + '</span>' +
       ytBtn +
-      '<button class="item-del" onclick="removeSong(' + i + ',\'' + dateStr + '\')">×</button>' +
+      delBtn +
       '</li>'
     );
   }).join("");
@@ -253,11 +339,14 @@ function renderMinistersList(mins, dateStr) {
     return;
   }
   el.innerHTML = mins.map(function (m, i) {
+    var delBtn = isAdmin
+      ? '<button class="item-del admin-only" onclick="removeMinister(' + i + ',\'' + dateStr + '\')">×</button>'
+      : "";
     return (
       '<li>' +
       '<span class="item-name">· ' + escapeHtml(m.name) + '</span>' +
       '<span class="item-sub">' + escapeHtml(m.instrument || "") + '</span>' +
-      '<button class="item-del" onclick="removeMinister(' + i + ',\'' + dateStr + '\')">×</button>' +
+      delBtn +
       '</li>'
     );
   }).join("");
@@ -265,6 +354,7 @@ function renderMinistersList(mins, dateStr) {
 
 // ── SONGS CRUD ────────────────────────────────────────────────
 function addSong(dateStr) {
+  if (!isAdmin) return;
   var input = document.getElementById("new-song");
   var urlInput = document.getElementById("new-song-url");
   var title = input.value.trim();
@@ -282,6 +372,7 @@ function addSong(dateStr) {
 }
 
 function removeSong(idx, dateStr) {
+  if (!isAdmin) return;
   var sched = scheduleData[dateStr] || {};
   var songs = sched.songs ? JSON.parse(sched.songs) : [];
   var title = songs[idx] ? (songs[idx].title || songs[idx]) : "esta canción";
@@ -296,6 +387,7 @@ function removeSong(idx, dateStr) {
 
 // ── MINISTERS CRUD ────────────────────────────────────────────
 function addMinister(dateStr) {
+  if (!isAdmin) return;
   var sel = document.getElementById("new-minister-select");
   var memberId = sel.value;
   if (!memberId) return;
@@ -318,6 +410,7 @@ function addMinister(dateStr) {
 }
 
 function removeMinister(idx, dateStr) {
+  if (!isAdmin) return;
   var sched = scheduleData[dateStr] || {};
   var mins = sched.ministers ? JSON.parse(sched.ministers) : [];
   var name = mins[idx] ? mins[idx].name : "este ministro";
@@ -332,6 +425,7 @@ function removeMinister(idx, dateStr) {
 
 // ── NOTES ─────────────────────────────────────────────────────
 function saveNotes(dateStr) {
+  if (!isAdmin) return;
   var notes = document.getElementById("notes-area").value;
   upsertSchedule(dateStr, { notes: notes }, function () { toast("Notas guardadas ✓"); });
 }
@@ -355,6 +449,7 @@ function upsertSchedule(dateStr, fields, cb) {
 
 // ── MEMBERS MODAL ─────────────────────────────────────────────
 function openMembersModal() {
+  if (!isAdmin) return;
   document.getElementById("members-modal").classList.add("open");
   renderMembersModal();
 }
@@ -363,6 +458,7 @@ function closeMembersModal() {
 }
 
 function addMember() {
+  if (!isAdmin) return;
   var name = document.getElementById("new-member-name").value.trim();
   var instrument = document.getElementById("new-member-instr").value.trim();
   if (!name || !db) return;
@@ -379,13 +475,17 @@ function addMember() {
 }
 
 function deleteMember(id) {
-  if (!db) return;
-  db.from("members").delete().eq("id", id)
-    .then(function () {
-      members = members.filter(function (m) { return m.id !== id; });
-      renderMiniTeam();
-      renderMembersModal();
-    });
+  if (!isAdmin) return;
+  var member = members.find(function (m) { return m.id === id; });
+  var name = member ? member.name : "este miembro";
+  confirmAction('¿Seguro que deseas eliminar a ' + name + ' del equipo?', function () {
+    db.from("members").delete().eq("id", id)
+      .then(function () {
+        members = members.filter(function (m) { return m.id !== id; });
+        renderMiniTeam();
+        renderMembersModal();
+      });
+  });
 }
 
 function renderMiniTeam() {

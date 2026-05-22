@@ -31,12 +31,15 @@
           <p>Calendario de Ministerio</p>
         </div>
       </div>
-      <button class="btn-outline" onclick="openMembersModal()">
-        <svg width="15" height="15" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM6 8a2 2 0 11-4 0 2 2 0 014 0zM1 18v-1a7 7 0 0114 0v1H1zM19 18v-1a5 5 0 00-4-4.9M5 13.1A5 5 0 001 18v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Equipo
-      </button>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="btn-theme" id="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
+        <button class="btn-outline" onclick="openMembersModal()">
+          <svg width="15" height="15" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM6 8a2 2 0 11-4 0 2 2 0 014 0zM1 18v-1a7 7 0 0114 0v1H1zM19 18v-1a5 5 0 00-4-4.9M5 13.1A5 5 0 001 18v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Equipo
+        </button>
+      </div>
     </header>
 
     <!-- MEMBERS MODAL -->
@@ -118,5 +121,29 @@
 
     <div id="toast"></div>
     <script src="/script.js"></script>
+    <script>
+      // Theme toggle — persists across sessions
+      (function () {
+        var saved = localStorage.getItem("theme");
+        if (saved === "dark") {
+          document.documentElement.setAttribute("data-theme", "dark");
+          document.getElementById("theme-toggle").textContent = "☀️";
+        }
+      })();
+
+      function toggleTheme() {
+        var isDark = document.documentElement.getAttribute("data-theme") === "dark";
+        var btn = document.getElementById("theme-toggle");
+        if (isDark) {
+          document.documentElement.removeAttribute("data-theme");
+          localStorage.setItem("theme", "light");
+          btn.textContent = "🌙";
+        } else {
+          document.documentElement.setAttribute("data-theme", "dark");
+          localStorage.setItem("theme", "dark");
+          btn.textContent = "☀️";
+        }
+      }
+    </script>
   </body>
 </html>

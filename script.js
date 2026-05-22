@@ -311,11 +311,8 @@ function renderDetail(dateStr) {
 
     '<div class="section-label">Ministros</div>' +
     '<ul class="section-list" id="ministers-list"></ul>' +
-    '<div class="add-row admin-only">' +
-    '<select id="new-minister-select">' +
-    '<option value="">— Seleccionar —</option>' + memberOptions +
-    '</select>' +
-    '<button onclick="addMinister(\'' + dateStr + '\')">+</button>' +
+    '<div class="member-checkbox-list admin-only" id="minister-checkboxes">' +
+    renderMemberCheckboxes(mins, dateStr) +
     '</div>' +
 
     '<div class="section-divider"></div>' +
@@ -423,41 +420,46 @@ function removeSong(idx, dateStr) {
 }
 
 // ── MINISTERS CRUD ────────────────────────────────────────────
-function addMinister(dateStr) {
+function toggleMinister(memberId, dateStr) {
   if (!isAdmin) return;
-  var sel = document.getElementById("new-minister-select");
-  var memberId = sel.value;
-  if (!memberId) return;
-  var member = null;
-  for (var i = 0; i < members.length; i++) {
-    if (String(members[i].id) === String(memberId)) { member = members[i]; break; }
-  }
+  var member = members.find(function (m) { return String(m.id) === String(memberId); });
   if (!member) return;
+
   var sched = scheduleData[dateStr] || {};
   var mins = sched.ministers ? JSON.parse(sched.ministers) : [];
-  for (var j = 0; j < mins.length; j++) {
-    if (String(mins[j].id) === String(memberId)) { toast("Ya está asignado"); return; }
+  var idx = mins.findIndex(function (m) { return String(m.id) === String(memberId); });
+
+  if (idx === -1) {
+    mins.push({ id: member.id, name: member.name, instrument: member.instrument });
+  } else {
+    mins.splice(idx, 1);
   }
-  mins.push({ id: member.id, name: member.name, instrument: member.instrument });
+
   upsertSchedule(dateStr, { ministers: JSON.stringify(mins) }, function () {
-    sel.value = "";
     renderMinistersList(mins, dateStr);
+    renderMemberCheckboxes_update(mins, dateStr);
     renderCalendar();
   });
 }
 
-function removeMinister(idx, dateStr) {
-  if (!isAdmin) return;
-  var sched = scheduleData[dateStr] || {};
-  var mins = sched.ministers ? JSON.parse(sched.ministers) : [];
-  var name = mins[idx] ? mins[idx].name : "este ministro";
-  confirmAction('¿Seguro que deseas quitar a ' + name + '?', function () {
-    mins.splice(idx, 1);
-    upsertSchedule(dateStr, { ministers: JSON.stringify(mins) }, function () {
-      renderMinistersList(mins, dateStr);
-      renderCalendar();
-    });
-  });
+function renderMemberCheckboxes(currentMins, dateStr) {
+  if (!members.length) return '<p style="font-size:12px;color:var(--text-3)">Sin miembros en el equipo.</p>';
+  return members.map(function (m) {
+    var checked = currentMins.some(function (min) { return String(min.id) === String(m.id); });
+    return (
+      '<label class="member-checkbox-row' + (checked ? ' checked' : '') + '">' +
+      '<input type="checkbox" ' + (checked ? 'checked' : '') +
+      ' onchange="toggleMinister(' + m.id + ',\'' + dateStr + '\')">' +
+      '<span class="mcb-name">' + escapeHtml(m.name) + '</span>' +
+      '<span class="mcb-instr">' + escapeHtml(m.instrument || '') + '</span>' +
+      '</label>'
+    );
+  }).join('');
+}
+
+function renderMemberCheckboxes_update(mins, dateStr) {
+  var el = document.getElementById('minister-checkboxes');
+  if (el) el.innerHTML = renderMemberCheckboxes(mins, dateStr);
 }
 
 // ── NOTES ─────────────────────────────────────────────────────

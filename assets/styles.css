@@ -1083,3 +1083,57 @@ header {
     text-align: center;
   }
 }
+
+/* ── MEMBER CHECKBOXES ── */
+.member-checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  background: var(--surface);
+}
+
+.member-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.12s;
+  user-select: none;
+}
+
+.member-checkbox-row:hover {
+  background: var(--surface-2);
+}
+
+.member-checkbox-row.checked {
+  background: var(--accent-bg);
+}
+
+.member-checkbox-row input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.mcb-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  flex: 1;
+}
+
+.mcb-instr {
+  font-size: 11px;
+  color: var(--text-3);
+  flex-shrink: 0;
+}

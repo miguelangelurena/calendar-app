@@ -52,11 +52,11 @@ function updateAdminUI() {
   var adminBtn = document.getElementById("admin-btn");
   var membersBtn = document.getElementById("members-btn");
   if (isAdmin) {
-    adminBtn.textContent = "🔓 Cerrar sesión";
+    adminBtn.textContent = "🔓";
     adminBtn.onclick = logout;
     if (membersBtn) membersBtn.style.display = "";
   } else {
-    adminBtn.textContent = "🔒 Admin";
+    adminBtn.textContent = "🔒";
     adminBtn.onclick = openLoginModal;
     if (membersBtn) membersBtn.style.display = "none";
   }

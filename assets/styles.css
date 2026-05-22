@@ -164,13 +164,13 @@ header {
 
 /* LAYOUT */
 .main {
-  height: calc(100vh - 61px - 33px);
-  padding: 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 340px;
-  grid-template-rows: 1fr;
   gap: 20px;
-  align-items: stretch;
+  align-items: start;
 }
 
 /* CALENDAR CARD */
@@ -180,9 +180,6 @@ header {
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
 }
 .cal-header {
   padding: 18px 20px;
@@ -229,11 +226,6 @@ header {
   grid-template-columns: repeat(7, minmax(0, 1fr));
   width: 100%;
 }
-#cal-days {
-  flex: 1;
-  min-height: 0;
-  grid-auto-rows: 1fr;
-}
 .cal-dow {
   padding: 10px 4px;
   text-align: center;
@@ -246,7 +238,7 @@ header {
   border-bottom: 1px solid var(--border);
 }
 .cal-day {
-  min-height: 0;
+  min-height: 86px;
   padding: 8px 7px;
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
@@ -309,8 +301,6 @@ header {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  overflow-y: auto;
-  min-height: 0;
 }
 .panel-card {
   background: var(--surface);
@@ -666,24 +656,12 @@ header {
 /* ─── RESPONSIVE MOBILE ─── */
 @media (max-width: 960px) {
   .main {
-    height: auto;
     grid-template-columns: 1fr;
-    grid-template-rows: auto;
     padding: 12px;
     gap: 12px;
-    align-items: start;
-  }
-  .calendar-card {
-    display: block;
-  }
-  #cal-days {
-    grid-auto-rows: auto;
-  }
-  .cal-day {
-    min-height: 64px;
   }
   .side-panel {
-    overflow-y: visible;
+    /* On mobile, show panel below calendar naturally */
   }
 }
 

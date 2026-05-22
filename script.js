@@ -312,7 +312,7 @@ function renderDetail(dateStr) {
     '<div class="admin-only">' +
     '<button class="btn-toggle-members" id="toggle-members-btn" onclick="toggleMemberPicker()">' +
     '<svg width="13" height="13" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
-    'Agregar ministro' +
+    'Agregar / Editar ministro' +
     '</button>' +
     '<div class="member-checkbox-list collapsed" id="minister-checkboxes"></div>' +
     '</div>' +

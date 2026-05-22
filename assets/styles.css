@@ -115,8 +115,8 @@ header {
   gap: 12px;
 }
 .brand-icon {
-  width: 34px;
-  height: 34px;
+  width: 68px;
+  height: 68px;
   border-radius: var(--radius-sm);
   overflow: hidden;
   flex-shrink: 0;
@@ -126,8 +126,8 @@ header {
   justify-content: center;
 }
 .brand-icon img {
-  width: 34px;
-  height: 34px;
+  width: 68px;
+  height: 68px;
   object-fit: cover;
 }
 .brand-text h1 {

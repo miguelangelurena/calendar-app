@@ -3,10 +3,10 @@ var SB_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlscWd1emdrZW1mdWpydnZodGRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzOTE0MjQsImV4cCI6MjA5NDk2NzQyNH0.Yj1FPDZIsbg8fxrSghFGFGECXQ14hOdiaZB2R61805E";
 
 var MONTHS = [
-  "Enero","Febrero","Marzo","Abril","Mayo","Junio",
-  "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre",
+  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
 ];
-var DAYS = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+var DAYS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
 var db = null;
 var currentDate = new Date();
@@ -19,6 +19,18 @@ function setStatus(msg, type) {
   var el = document.getElementById("status-bar");
   el.textContent = msg;
   el.className = type || "";
+}
+
+// ── CONFIRM DIALOG ────────────────────────────────────────────
+function confirmAction(msg, onConfirm) {
+  var modal = document.getElementById("confirm-modal");
+  document.getElementById("confirm-msg").textContent = msg;
+  var btn = document.getElementById("confirm-ok");
+  btn.onclick = function () { closeConfirm(); onConfirm(); };
+  modal.classList.add("open");
+}
+function closeConfirm() {
+  document.getElementById("confirm-modal").classList.remove("open");
 }
 
 // ── TOAST ────────────────────────────────────────────────────
@@ -48,7 +60,7 @@ window.addEventListener("load", function () {
 
 // ── CALENDAR ─────────────────────────────────────────────────
 function renderCalendar() {
-  var year  = currentDate.getFullYear();
+  var year = currentDate.getFullYear();
   var month = currentDate.getMonth();
   document.getElementById("cal-month-label").textContent =
     MONTHS[month] + " " + year;
@@ -58,27 +70,27 @@ function renderCalendar() {
     return '<div class="cal-dow">' + d + "</div>";
   }).join("");
 
-  var first       = new Date(year, month, 1).getDay();
+  var first = new Date(year, month, 1).getDay();
   var daysInMonth = new Date(year, month + 1, 0).getDate();
-  var today       = new Date();
-  var todayStr    = today.getFullYear() + "-" + pad(today.getMonth() + 1) + "-" + pad(today.getDate());
+  var today = new Date();
+  var todayStr = today.getFullYear() + "-" + pad(today.getMonth() + 1) + "-" + pad(today.getDate());
 
   var html = "";
   for (var i = 0; i < first; i++) html += '<div class="cal-day empty"></div>';
 
   for (var d = 1; d <= daysInMonth; d++) {
-    var dateStr  = year + "-" + pad(month + 1) + "-" + pad(d);
+    var dateStr = year + "-" + pad(month + 1) + "-" + pad(d);
     var dayOfWeek = new Date(year, month, d).getDay();
     var cls = "cal-day";
-    if (dayOfWeek === 0)          cls += " sunday";
-    if (dateStr === todayStr)     cls += " today";
+    if (dayOfWeek === 0) cls += " sunday";
+    if (dateStr === todayStr) cls += " today";
     if (dateStr === selectedDate) cls += " selected";
 
-    var dots  = "";
+    var dots = "";
     var sched = scheduleData[dateStr];
     if (sched) {
-      var songs = sched.songs    ? JSON.parse(sched.songs)    : [];
-      var mins  = sched.ministers ? JSON.parse(sched.ministers) : [];
+      var songs = sched.songs ? JSON.parse(sched.songs) : [];
+      var mins = sched.ministers ? JSON.parse(sched.ministers) : [];
       songs.slice(0, 2).forEach(function (s) {
         dots += '<div class="day-dot">♪ ' + (s.title || s) + "</div>";
       });
@@ -110,10 +122,10 @@ function changeMonth(dir) {
 // ── DATA ─────────────────────────────────────────────────────
 function loadMonthData(cb) {
   if (!db) { if (cb) cb(); return; }
-  var year  = currentDate.getFullYear();
+  var year = currentDate.getFullYear();
   var month = currentDate.getMonth();
   var start = year + "-" + pad(month + 1) + "-01";
-  var end   = year + "-" + pad(month + 1) + "-" + pad(new Date(year, month + 1, 0).getDate());
+  var end = year + "-" + pad(month + 1) + "-" + pad(new Date(year, month + 1, 0).getDate());
 
   db.from("schedules").select("*").gte("date", start).lte("date", end)
     .then(function (res) {
@@ -153,13 +165,13 @@ function selectDate(dateStr) {
 
 function renderDetail(dateStr) {
   var parts = dateStr.split("-");
-  var date  = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+  var date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
   var label = DAYS[date.getDay()] + " " + parseInt(parts[2]) + " de " + MONTHS[parseInt(parts[1]) - 1];
   document.getElementById("detail-date").textContent = label;
 
   var sched = scheduleData[dateStr] || {};
-  var songs = sched.songs     ? JSON.parse(sched.songs)     : [];
-  var mins  = sched.ministers ? JSON.parse(sched.ministers) : [];
+  var songs = sched.songs ? JSON.parse(sched.songs) : [];
+  var mins = sched.ministers ? JSON.parse(sched.ministers) : [];
   var notes = sched.notes || "";
 
   var memberOptions = members.map(function (m) {
@@ -172,9 +184,9 @@ function renderDetail(dateStr) {
     '<div class="section-label">Canciones</div>' +
     '<ul class="section-list" id="songs-list"></ul>' +
     '<div class="add-row">' +
-      '<input id="new-song" placeholder="Título de canción" />' +
-      '<input id="new-song-url" placeholder="Link YouTube" />' +
-      '<button onclick="addSong(\'' + dateStr + '\')">+</button>' +
+    '<input id="new-song" placeholder="Título de canción" />' +
+    '<input id="new-song-url" placeholder="Link YouTube" />' +
+    '<button onclick="addSong(\'' + dateStr + '\')">+</button>' +
     '</div>' +
 
     '<div class="section-divider"></div>' +
@@ -183,10 +195,10 @@ function renderDetail(dateStr) {
     '<div class="section-label">Ministros</div>' +
     '<ul class="section-list" id="ministers-list"></ul>' +
     '<div class="add-row">' +
-      '<select id="new-minister-select">' +
-        '<option value="">— Seleccionar —</option>' + memberOptions +
-      '</select>' +
-      '<button onclick="addMinister(\'' + dateStr + '\')">+</button>' +
+    '<select id="new-minister-select">' +
+    '<option value="">— Seleccionar —</option>' + memberOptions +
+    '</select>' +
+    '<button onclick="addMinister(\'' + dateStr + '\')">+</button>' +
     '</div>' +
 
     '<div class="section-divider"></div>' +
@@ -194,7 +206,7 @@ function renderDetail(dateStr) {
     // NOTES
     '<div class="section-label">Notas</div>' +
     '<textarea class="notes-area" id="notes-area" placeholder="Tono, orden del servicio…">' +
-      escapeHtml(notes) +
+    escapeHtml(notes) +
     '</textarea>' +
     '<button class="btn-save" onclick="saveNotes(\'' + dateStr + '\')">Guardar notas</button>';
 
@@ -224,9 +236,9 @@ function renderSongsList(songs, dateStr) {
       : "";
     return (
       '<li>' +
-        '<span class="item-name">♪ ' + escapeHtml(s.title || s) + '</span>' +
-        ytBtn +
-        '<button class="item-del" onclick="removeSong(' + i + ',\'' + dateStr + '\')">×</button>' +
+      '<span class="item-name">♪ ' + escapeHtml(s.title || s) + '</span>' +
+      ytBtn +
+      '<button class="item-del" onclick="removeSong(' + i + ',\'' + dateStr + '\')">×</button>' +
       '</li>'
     );
   }).join("");
@@ -243,9 +255,9 @@ function renderMinistersList(mins, dateStr) {
   el.innerHTML = mins.map(function (m, i) {
     return (
       '<li>' +
-        '<span class="item-name">· ' + escapeHtml(m.name) + '</span>' +
-        '<span class="item-sub">' + escapeHtml(m.instrument || "") + '</span>' +
-        '<button class="item-del" onclick="removeMinister(' + i + ',\'' + dateStr + '\')">×</button>' +
+      '<span class="item-name">· ' + escapeHtml(m.name) + '</span>' +
+      '<span class="item-sub">' + escapeHtml(m.instrument || "") + '</span>' +
+      '<button class="item-del" onclick="removeMinister(' + i + ',\'' + dateStr + '\')">×</button>' +
       '</li>'
     );
   }).join("");
@@ -253,13 +265,13 @@ function renderMinistersList(mins, dateStr) {
 
 // ── SONGS CRUD ────────────────────────────────────────────────
 function addSong(dateStr) {
-  var input    = document.getElementById("new-song");
+  var input = document.getElementById("new-song");
   var urlInput = document.getElementById("new-song-url");
-  var title    = input.value.trim();
+  var title = input.value.trim();
   if (!title) return;
-  var url      = urlInput ? urlInput.value.trim() : "";
-  var sched    = scheduleData[dateStr] || {};
-  var songs    = sched.songs ? JSON.parse(sched.songs) : [];
+  var url = urlInput ? urlInput.value.trim() : "";
+  var sched = scheduleData[dateStr] || {};
+  var songs = sched.songs ? JSON.parse(sched.songs) : [];
   songs.push({ title: title, url: url });
   upsertSchedule(dateStr, { songs: JSON.stringify(songs) }, function () {
     input.value = "";
@@ -272,16 +284,19 @@ function addSong(dateStr) {
 function removeSong(idx, dateStr) {
   var sched = scheduleData[dateStr] || {};
   var songs = sched.songs ? JSON.parse(sched.songs) : [];
-  songs.splice(idx, 1);
-  upsertSchedule(dateStr, { songs: JSON.stringify(songs) }, function () {
-    renderSongsList(songs, dateStr);
-    renderCalendar();
+  var title = songs[idx] ? (songs[idx].title || songs[idx]) : "esta canción";
+  confirmAction('¿Seguro que deseas eliminar "' + title + '"?', function () {
+    songs.splice(idx, 1);
+    upsertSchedule(dateStr, { songs: JSON.stringify(songs) }, function () {
+      renderSongsList(songs, dateStr);
+      renderCalendar();
+    });
   });
 }
 
 // ── MINISTERS CRUD ────────────────────────────────────────────
 function addMinister(dateStr) {
-  var sel      = document.getElementById("new-minister-select");
+  var sel = document.getElementById("new-minister-select");
   var memberId = sel.value;
   if (!memberId) return;
   var member = null;
@@ -290,7 +305,7 @@ function addMinister(dateStr) {
   }
   if (!member) return;
   var sched = scheduleData[dateStr] || {};
-  var mins  = sched.ministers ? JSON.parse(sched.ministers) : [];
+  var mins = sched.ministers ? JSON.parse(sched.ministers) : [];
   for (var j = 0; j < mins.length; j++) {
     if (String(mins[j].id) === String(memberId)) { toast("Ya está asignado"); return; }
   }
@@ -304,11 +319,14 @@ function addMinister(dateStr) {
 
 function removeMinister(idx, dateStr) {
   var sched = scheduleData[dateStr] || {};
-  var mins  = sched.ministers ? JSON.parse(sched.ministers) : [];
-  mins.splice(idx, 1);
-  upsertSchedule(dateStr, { ministers: JSON.stringify(mins) }, function () {
-    renderMinistersList(mins, dateStr);
-    renderCalendar();
+  var mins = sched.ministers ? JSON.parse(sched.ministers) : [];
+  var name = mins[idx] ? mins[idx].name : "este ministro";
+  confirmAction('¿Seguro que deseas quitar a ' + name + '?', function () {
+    mins.splice(idx, 1);
+    upsertSchedule(dateStr, { ministers: JSON.stringify(mins) }, function () {
+      renderMinistersList(mins, dateStr);
+      renderCalendar();
+    });
   });
 }
 
@@ -322,9 +340,9 @@ function saveNotes(dateStr) {
 function upsertSchedule(dateStr, fields, cb) {
   if (!db) return;
   var existing = scheduleData[dateStr] || { date: dateStr };
-  var updated  = {};
+  var updated = {};
   for (var k in existing) updated[k] = existing[k];
-  for (var k in fields)   updated[k] = fields[k];
+  for (var k in fields) updated[k] = fields[k];
   updated.date = dateStr;
   scheduleData[dateStr] = updated;
 
@@ -345,7 +363,7 @@ function closeMembersModal() {
 }
 
 function addMember() {
-  var name       = document.getElementById("new-member-name").value.trim();
+  var name = document.getElementById("new-member-name").value.trim();
   var instrument = document.getElementById("new-member-instr").value.trim();
   if (!name || !db) return;
   db.from("members").insert({ name: name, instrument: instrument }).select()
@@ -384,18 +402,18 @@ function renderMiniTeam() {
       .join("").substring(0, 2).toUpperCase();
     return (
       '<div class="member-chip">' +
-        '<div class="member-avatar">' + initials + '</div>' +
-        '<div class="member-info">' +
-          '<div class="name">' + escapeHtml(m.name) + '</div>' +
-          '<div class="instr">' + escapeHtml(m.instrument || "—") + '</div>' +
-        '</div>' +
+      '<div class="member-avatar">' + initials + '</div>' +
+      '<div class="member-info">' +
+      '<div class="name">' + escapeHtml(m.name) + '</div>' +
+      '<div class="instr">' + escapeHtml(m.instrument || "—") + '</div>' +
+      '</div>' +
       '</div>'
     );
   }).join("");
 }
 
 function toggleTeam() {
-  var el     = document.getElementById("team-collapsible");
+  var el = document.getElementById("team-collapsible");
   var chevron = document.getElementById("team-chevron");
   if (el.style.maxHeight === "0px") {
     el.style.maxHeight = "600px";
@@ -415,11 +433,11 @@ function renderMembersModal() {
   el.innerHTML = members.map(function (m) {
     return (
       '<div class="modal-member-row">' +
-        '<div>' +
-          '<div class="name">' + escapeHtml(m.name) + '</div>' +
-          '<div class="instr">' + escapeHtml(m.instrument || "Sin instrumento") + '</div>' +
-        '</div>' +
-        '<button class="item-del" onclick="deleteMember(' + m.id + ')">×</button>' +
+      '<div>' +
+      '<div class="name">' + escapeHtml(m.name) + '</div>' +
+      '<div class="instr">' + escapeHtml(m.instrument || "Sin instrumento") + '</div>' +
+      '</div>' +
+      '<button class="item-del" onclick="deleteMember(' + m.id + ')">×</button>' +
       '</div>'
     );
   }).join("");

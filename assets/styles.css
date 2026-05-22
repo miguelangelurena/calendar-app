@@ -952,3 +952,128 @@ header {
 .btn-ok-confirm:hover {
   background: #b91c1c;
 }
+
+/* ── HAMBURGER BUTTON ── */
+.btn-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.btn-hamburger span {
+  display: block;
+  width: 16px;
+  height: 1.5px;
+  background: var(--text-2);
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.25s ease, width 0.25s ease;
+  transform-origin: center;
+}
+
+.btn-hamburger:hover span {
+  background: var(--text);
+}
+
+.btn-hamburger.open span:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg);
+}
+
+.btn-hamburger.open span:nth-child(2) {
+  opacity: 0;
+  width: 0;
+}
+
+.btn-hamburger.open span:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg);
+}
+
+/* ── MOBILE MENU OVERLAY ── */
+#mobile-menu-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 98;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+#mobile-menu-overlay.open {
+  display: block;
+  opacity: 1;
+}
+
+/* ── MOBILE MENU DRAWER ── */
+#mobile-menu {
+  display: none;
+  position: fixed;
+  top: 54px;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  padding: 6px 0;
+  transform: translateY(-8px);
+  opacity: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+#mobile-menu.open {
+  display: block;
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.mobile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  user-select: none;
+}
+
+.mobile-menu-item:hover,
+.mobile-menu-item:active {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.mobile-menu-item svg {
+  flex-shrink: 0;
+  color: var(--text-3);
+}
+
+.mobile-menu-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+/* ── RESPONSIVE: mostrar/ocultar ── */
+@media (max-width: 640px) {
+  .header-actions-desktop {
+    display: none !important;
+  }
+
+  .btn-hamburger {
+    display: flex;
+  }
+}

@@ -51,7 +51,8 @@
         <p>Calendario de Ministerio</p>
       </div>
     </div>
-    <div style="display:flex;align-items:center;gap:8px">
+    <!-- Botones desktop -->
+    <div class="header-actions-desktop">
       <button class="btn-theme" id="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
       <button class="btn-outline" id="members-btn" onclick="openMembersModal()" style="display:none">
         <svg width="15" height="15" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -63,14 +64,50 @@
       </button>
       <button class="btn-outline" id="export-btn" onclick="exportMonthPDF()" title="Exportar mes como PDF">
         <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M4 16v1a1 1 0 001 1h10a1 1 0 001-1v-1M7 10l3 3m0 0l3-3m-3 3V4"
-            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M4 16v1a1 1 0 001 1h10a1 1 0 001-1v-1M7 10l3 3m0 0l3-3m-3 3V4" stroke="currentColor"
+            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
         PDF
       </button>
       <button class="btn-outline" id="admin-btn" onclick="openLoginModal()">🔒</button>
     </div>
+
+    <!-- Botón hamburguesa móvil -->
+    <button class="btn-hamburger" id="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
   </header>
+
+  <!-- MOBILE MENU DRAWER -->
+  <div id="mobile-menu-overlay" onclick="closeMobileMenu()"></div>
+  <div id="mobile-menu">
+    <div class="mobile-menu-item" onclick="toggleThemeMobile()">
+      <span id="mobile-theme-icon">🌙</span>
+      <span id="mobile-theme-label">Modo oscuro</span>
+    </div>
+    <div class="mobile-menu-divider"></div>
+    <div class="mobile-menu-item" id="mobile-members-btn" onclick="closeMobileMenu(); openMembersModal();"
+      style="display:none">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+        <path
+          d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM6 8a2 2 0 11-4 0 2 2 0 014 0zM1 18v-1a7 7 0 0114 0v1H1zM19 18v-1a5 5 0 00-4-4.9M5 13.1A5 5 0 001 18v1"
+          stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      Gestionar Equipo
+    </div>
+    <div class="mobile-menu-item" onclick="closeMobileMenu(); exportMonthPDF();">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+        <path d="M4 16v1a1 1 0 001 1h10a1 1 0 001-1v-1M7 10l3 3m0 0l3-3m-3 3V4" stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      Exportar PDF
+    </div>
+    <div class="mobile-menu-divider"></div>
+    <div class="mobile-menu-item" id="mobile-admin-btn" onclick="closeMobileMenu(); openLoginModal();">
+      <span id="mobile-admin-icon">🔒</span>
+      <span id="mobile-admin-label">Acceso Admin</span>
+    </div>
+  </div>
 
   <!-- MEMBERS MODAL -->
   <div id="members-modal">

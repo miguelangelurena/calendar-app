@@ -730,7 +730,6 @@ header {
 }
 
 .btn-close-modal {
-  margin-top: 14px;
   background: var(--bg);
   border: 1px solid var(--border-strong);
   color: var(--text-2);

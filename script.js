@@ -343,28 +343,189 @@ function escapeHtml(str) {
 }
 
 // ── SONGS RENDER ─────────────────────────────────────────────
+var dragSrcIdx = null;
+
 function renderSongsList(songs, dateStr) {
   var el = document.getElementById("songs-list");
   if (!el) return;
+  el.innerHTML = "";
+
   if (!songs.length) {
     el.innerHTML = '<li class="empty-list">Sin canciones aún</li>';
     return;
   }
-  el.innerHTML = songs.map(function (s, i) {
-    var ytBtn = s.url
-      ? '<a href="' + s.url + '" target="_blank" class="yt-btn">▶</a>'
-      : "";
-    var delBtn = isAdmin
-      ? '<button class="item-del admin-only" onclick="removeSong(' + i + ',\'' + dateStr + '\')">×</button>'
-      : "";
-    return (
-      '<li>' +
-      '<span class="item-name">♪ ' + escapeHtml(s.title || s) + '</span>' +
-      ytBtn +
-      delBtn +
-      '</li>'
-    );
-  }).join("");
+
+  songs.forEach(function (s, i) {
+    var li = document.createElement("li");
+    li.dataset.index = i;
+
+    var nameSpan = document.createElement("span");
+    nameSpan.className = "item-name";
+    nameSpan.textContent = "♪ " + (s.title || s);
+    li.appendChild(nameSpan);
+
+    if (s.url) {
+      var ytBtn = document.createElement("a");
+      ytBtn.href = s.url;
+      ytBtn.target = "_blank";
+      ytBtn.className = "yt-btn";
+      ytBtn.textContent = "▶";
+      li.appendChild(ytBtn);
+    }
+
+    if (isAdmin) {
+      var handle = document.createElement("span");
+      handle.className = "drag-handle";
+      handle.innerHTML = "⠿";
+      handle.title = "Arrastrar";
+      li.insertBefore(handle, li.firstChild);
+
+      var delBtn = document.createElement("button");
+      delBtn.className = "item-del admin-only";
+      delBtn.textContent = "×";
+      delBtn.onclick = function () { removeSong(i, dateStr); };
+      li.appendChild(delBtn);
+    }
+
+    el.appendChild(li);
+  });
+
+  if (isAdmin) setupSmoothDrag(el, songs, dateStr);
+}
+
+function setupSmoothDrag(list, songs, dateStr) {
+  var items = Array.from(list.querySelectorAll("li"));
+  var dragging = null;
+  var itemHeight = 0;
+  var offsetY = 0;
+
+  function startDrag(item, i, clientY) {
+    dragging = item;
+    dragSrcIdx = i;
+
+    var rect = item.getBoundingClientRect();
+    itemHeight = rect.height;
+    offsetY = clientY - rect.top;
+
+    item.style.width = rect.width + "px";
+    item.style.position = "fixed";
+    item.style.top = rect.top + "px";
+    item.style.left = rect.left + "px";
+    item.style.zIndex = 1000;
+    item.style.pointerEvents = "none";
+    item.style.boxShadow = "var(--shadow-lg)";
+    item.style.opacity = "0.95";
+    item.style.transition = "box-shadow 0.15s";
+
+    var placeholder = document.createElement("li");
+    placeholder.className = "drag-placeholder";
+    placeholder.style.height = itemHeight + "px";
+    list.insertBefore(placeholder, item.nextSibling);
+    item._placeholder = placeholder;
+  }
+
+  function moveDrag(clientY) {
+    if (!dragging) return;
+
+    dragging.style.top = (clientY - offsetY) + "px";
+
+    var listItems = Array.from(list.querySelectorAll("li:not(.drag-placeholder):not([style*='fixed'])"));
+    var insertBefore = null;
+    var newIdx = listItems.length;
+
+    listItems.forEach(function (item, i) {
+      var rect = item.getBoundingClientRect();
+      var mid = rect.top + rect.height / 2;
+      if (clientY < mid && insertBefore === null) {
+        insertBefore = item;
+        newIdx = i;
+      }
+    });
+
+    var placeholder = dragging._placeholder;
+    if (insertBefore) {
+      list.insertBefore(placeholder, insertBefore);
+    } else {
+      list.appendChild(placeholder);
+    }
+
+    dragging._newIdx = newIdx;
+  }
+
+  function endDrag() {
+    if (!dragging) return;
+
+    var placeholder = dragging._placeholder;
+    var newIdx = dragging._newIdx !== undefined ? dragging._newIdx : dragSrcIdx;
+
+    var phRect = placeholder.getBoundingClientRect();
+    dragging.style.transition = "top 0.18s ease, box-shadow 0.18s";
+    dragging.style.top = phRect.top + "px";
+
+    setTimeout(function () {
+      dragging.style.position = "";
+      dragging.style.top = "";
+      dragging.style.left = "";
+      dragging.style.width = "";
+      dragging.style.zIndex = "";
+      dragging.style.pointerEvents = "";
+      dragging.style.boxShadow = "";
+      dragging.style.opacity = "";
+      dragging.style.transition = "";
+
+      list.insertBefore(dragging, placeholder);
+      list.removeChild(placeholder);
+
+      if (newIdx !== dragSrcIdx) {
+        var reordered = songs.slice();
+        var moved = reordered.splice(dragSrcIdx, 1)[0];
+        var adjustedIdx = dragSrcIdx < newIdx ? newIdx - 1 : newIdx;
+        reordered.splice(adjustedIdx, 0, moved);
+
+        upsertSchedule(dateStr, { songs: JSON.stringify(reordered) }, function () {
+          scheduleData[dateStr].songs = JSON.stringify(reordered);
+          renderSongsList(reordered, dateStr);
+          renderCalendar();
+        });
+      }
+
+      dragging = null;
+      dragSrcIdx = null;
+    }, 180);
+
+    document.removeEventListener("mousemove", onMouseMove);
+    document.removeEventListener("mouseup", onMouseUp);
+    document.removeEventListener("touchmove", onTouchMove);
+    document.removeEventListener("touchend", onTouchEnd);
+  }
+
+  // ── Handlers mouse ──
+  function onMouseMove(e) { moveDrag(e.clientY); }
+  function onMouseUp() { endDrag(); }
+
+  // ── Handlers touch ──
+  function onTouchMove(e) { e.preventDefault(); moveDrag(e.touches[0].clientY); }
+  function onTouchEnd() { endDrag(); }
+
+  // ── Bind a cada handle ──
+  items.forEach(function (item, i) {
+    var handle = item.querySelector(".drag-handle");
+    if (!handle) return;
+
+    handle.addEventListener("mousedown", function (e) {
+      e.preventDefault();
+      startDrag(item, i, e.clientY);
+      document.addEventListener("mousemove", onMouseMove);
+      document.addEventListener("mouseup", onMouseUp);
+    });
+
+    handle.addEventListener("touchstart", function (e) {
+      e.preventDefault();
+      startDrag(item, i, e.touches[0].clientY);
+      document.addEventListener("touchmove", onTouchMove, { passive: false });
+      document.addEventListener("touchend", onTouchEnd);
+    }, { passive: false });
+  });
 }
 
 // ── MINISTERS RENDER ─────────────────────────────────────────

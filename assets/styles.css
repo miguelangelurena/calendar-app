@@ -1230,3 +1230,32 @@ header {
   color: var(--text-3);
   flex-shrink: 0;
 }
+
+/* Handle de arrastre */
+.drag-handle {
+  cursor: grab;
+  color: var(--text-3);
+  font-size: 14px;
+  padding: 0 6px 0 2px;
+  flex-shrink: 0;
+  user-select: none;
+  letter-spacing: -1px;
+  transition: color 0.15s;
+}
+
+.drag-handle:hover {
+  color: var(--text-2);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Placeholder del espacio reservado */
+.drag-placeholder {
+  background: var(--accent-bg);
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  margin-bottom: 4px;
+  transition: height 0.15s;
+}

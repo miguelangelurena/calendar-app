@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap");
 
 :root {
   --bg: #f5f5f4;
@@ -54,14 +54,19 @@
 }
 
 body {
-  font-family: 'Geist', -apple-system, sans-serif;
+  font-family:
+    "Geist",
+    -apple-system,
+    sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 
 /* ── THEME TOGGLE ── */
@@ -99,7 +104,11 @@ body {
   border-bottom: 1px solid var(--border);
   overflow: hidden;
   max-height: 40px;
-  transition: opacity 0.5s, max-height 0.5s ease, padding 0.5s ease, border 0.5s ease;
+  transition:
+    opacity 0.5s,
+    max-height 0.5s ease,
+    padding 0.5s ease,
+    border 0.5s ease;
 }
 
 #status-bar.ok {
@@ -215,7 +224,10 @@ header {
   height: 1.5px;
   background: var(--text-2);
   border-radius: 2px;
-  transition: transform 0.25s ease, opacity 0.25s ease, width 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease,
+    width 0.25s ease;
   transform-origin: center;
 }
 
@@ -365,7 +377,7 @@ header {
   font-weight: 500;
   color: var(--text-3);
   margin-bottom: 5px;
-  font-family: 'Geist Mono', monospace;
+  font-family: "Geist Mono", monospace;
 }
 
 .cal-day.today .day-num {
@@ -425,8 +437,9 @@ header {
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   background: var(--surface-2);
+  gap: 5px;
 }
 
 .panel-header h3 {
@@ -697,7 +710,7 @@ header {
   font-weight: 700;
   color: var(--text-2);
   flex-shrink: 0;
-  font-family: 'Geist Mono', monospace;
+  font-family: "Geist Mono", monospace;
 }
 
 .member-info .name {
@@ -929,7 +942,9 @@ header {
   padding: 6px 0;
   transform: translateY(-8px);
   opacity: 0;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 #mobile-menu.open {
@@ -947,7 +962,9 @@ header {
   font-weight: 500;
   color: var(--text-2);
   cursor: pointer;
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
   user-select: none;
 }
 
@@ -983,7 +1000,6 @@ header {
 
 /* Mobile: mostrar hamburguesa, ocultar desktop actions */
 @media (max-width: 640px) {
-
   /* Ocultar botones de desktop */
   .header-actions-desktop {
     display: none !important;
@@ -1138,7 +1154,10 @@ header {
   background: var(--surface);
   max-height: 220px;
   overflow-y: auto;
-  transition: max-height 0.25s ease, opacity 0.2s ease, margin 0.2s ease;
+  transition:
+    max-height 0.25s ease,
+    opacity 0.2s ease,
+    margin 0.2s ease;
 }
 
 .member-checkbox-list.collapsed {
@@ -1258,4 +1277,34 @@ header {
   border-radius: var(--radius-sm);
   margin-bottom: 4px;
   transition: height 0.15s;
+}
+
+/* ── COPY / PASTE DAY ── */
+.btn-copy-day {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-3);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn-copy-day:hover {
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+.btn-paste-day {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.btn-paste-day:hover {
+  background: var(--accent-bg);
+  color: var(--text);
 }

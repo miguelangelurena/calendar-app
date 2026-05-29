@@ -2,7 +2,8 @@ var SB_URL = "https://ilqguzgkemfujrvvhtdp.supabase.co";
 var SB_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlscWd1emdrZW1mdWpydnZodGRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzOTE0MjQsImV4cCI6MjA5NDk2NzQyNH0.Yj1FPDZIsbg8fxrSghFGFGECXQ14hOdiaZB2R61805E";
 
-var ADMIN_HASH = "82f5d75f09f19488de551e88188b21b3a442557dd5f32aef433d284916ba1701";
+var ADMIN_HASH =
+  "82f5d75f09f19488de551e88188b21b3a442557dd5f32aef433d284916ba1701";
 
 var isAdmin = false;
 
@@ -20,9 +21,16 @@ async function submitLogin() {
   errEl.style.display = "none";
   if (!pw) return;
   try {
-    var hashBuffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pw));
+    var hashBuffer = await crypto.subtle.digest(
+      "SHA-256",
+      new TextEncoder().encode(pw),
+    );
     var hashArray = Array.from(new Uint8Array(hashBuffer));
-    var hash = hashArray.map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+    var hash = hashArray
+      .map(function (b) {
+        return b.toString(16).padStart(2, "0");
+      })
+      .join("");
     if (hash === ADMIN_HASH) {
       isAdmin = true;
       localStorage.setItem("admin_token", hash);
@@ -68,12 +76,20 @@ function updateAdminUI() {
   if (isAdmin) {
     if (mobileAdminIcon) mobileAdminIcon.textContent = "🔓";
     if (mobileAdminLabel) mobileAdminLabel.textContent = "Cerrar sesión";
-    if (mobileAdminBtn) mobileAdminBtn.onclick = function () { closeMobileMenu(); logout(); };
+    if (mobileAdminBtn)
+      mobileAdminBtn.onclick = function () {
+        closeMobileMenu();
+        logout();
+      };
     if (mobileMembersBtn) mobileMembersBtn.style.display = "";
   } else {
     if (mobileAdminIcon) mobileAdminIcon.textContent = "🔒";
     if (mobileAdminLabel) mobileAdminLabel.textContent = "Acceso Admin";
-    if (mobileAdminBtn) mobileAdminBtn.onclick = function () { closeMobileMenu(); openLoginModal(); };
+    if (mobileAdminBtn)
+      mobileAdminBtn.onclick = function () {
+        closeMobileMenu();
+        openLoginModal();
+      };
     if (mobileMembersBtn) mobileMembersBtn.style.display = "none";
   }
 }
@@ -89,7 +105,9 @@ function openLoginModal() {
   document.getElementById("login-error").style.display = "none";
   document.getElementById("login-password").value = "";
   document.getElementById("login-modal").classList.add("open");
-  setTimeout(function () { document.getElementById("login-password").focus(); }, 100);
+  setTimeout(function () {
+    document.getElementById("login-password").focus();
+  }, 100);
 }
 function closeLoginModal() {
   document.getElementById("login-modal").classList.remove("open");
@@ -100,7 +118,10 @@ function confirmAction(msg, onConfirm) {
   var modal = document.getElementById("confirm-modal");
   document.getElementById("confirm-msg").textContent = msg;
   var btn = document.getElementById("confirm-ok");
-  btn.onclick = function () { closeConfirm(); onConfirm(); };
+  btn.onclick = function () {
+    closeConfirm();
+    onConfirm();
+  };
   modal.classList.add("open");
 }
 function closeConfirm() {
@@ -109,8 +130,18 @@ function closeConfirm() {
 
 // ── GLOBALS ───────────────────────────────────────────────────
 var MONTHS = [
-  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
 ];
 var DAYS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
@@ -137,7 +168,8 @@ function setStatus(msg, type) {
   if (type !== "err") {
     clearTimeout(window._statusTimer);
     window._statusTimer = setTimeout(function () {
-      el.style.transition = "opacity 0.5s, max-height 0.6s ease, padding 0.6s ease, border 0.6s ease";
+      el.style.transition =
+        "opacity 0.5s, max-height 0.6s ease, padding 0.6s ease, border 0.6s ease";
       el.style.opacity = "0";
       el.style.maxHeight = "0";
       el.style.padding = "0";
@@ -151,7 +183,9 @@ function toast(msg) {
   var el = document.getElementById("toast");
   el.textContent = msg;
   el.classList.add("show");
-  setTimeout(function () { el.classList.remove("show"); }, 3000);
+  setTimeout(function () {
+    el.classList.remove("show");
+  }, 3000);
 }
 
 // ── INIT ─────────────────────────────────────────────────────
@@ -166,7 +200,10 @@ window.addEventListener("load", function () {
   checkAdminSession();
 
   if (typeof supabase === "undefined" || !supabase.createClient) {
-    setStatus("Error: no se pudo cargar Supabase. Verifica tu conexión.", "err");
+    setStatus(
+      "Error: no se pudo cargar Supabase. Verifica tu conexión.",
+      "err",
+    );
     return;
   }
   try {
@@ -194,7 +231,12 @@ function renderCalendar() {
   var first = new Date(year, month, 1).getDay();
   var daysInMonth = new Date(year, month + 1, 0).getDate();
   var today = new Date();
-  var todayStr = today.getFullYear() + "-" + pad(today.getMonth() + 1) + "-" + pad(today.getDate());
+  var todayStr =
+    today.getFullYear() +
+    "-" +
+    pad(today.getMonth() + 1) +
+    "-" +
+    pad(today.getDate());
 
   var html = "";
   for (var i = 0; i < first; i++) html += '<div class="cal-day empty"></div>';
@@ -221,15 +263,25 @@ function renderCalendar() {
     }
 
     html +=
-      '<div class="' + cls + '" onclick="selectDate(\'' + dateStr + "')\">" +
-      '<div class="day-num">' + d + "</div>" +
-      '<div class="day-dots">' + dots + "</div>" +
+      '<div class="' +
+      cls +
+      '" onclick="selectDate(\'' +
+      dateStr +
+      "')\">" +
+      '<div class="day-num">' +
+      d +
+      "</div>" +
+      '<div class="day-dots">' +
+      dots +
+      "</div>" +
       "</div>";
   }
   document.getElementById("cal-days").innerHTML = html;
 }
 
-function pad(n) { return n < 10 ? "0" + n : "" + n; }
+function pad(n) {
+  return n < 10 ? "0" + n : "" + n;
+}
 
 function changeMonth(dir) {
   currentDate.setMonth(currentDate.getMonth() + dir);
@@ -242,26 +294,46 @@ function changeMonth(dir) {
 
 // ── DATA ─────────────────────────────────────────────────────
 function loadMonthData(cb) {
-  if (!db) { if (cb) cb(); return; }
+  if (!db) {
+    if (cb) cb();
+    return;
+  }
   var year = currentDate.getFullYear();
   var month = currentDate.getMonth();
   var start = year + "-" + pad(month + 1) + "-01";
-  var end = year + "-" + pad(month + 1) + "-" + pad(new Date(year, month + 1, 0).getDate());
+  var end =
+    year +
+    "-" +
+    pad(month + 1) +
+    "-" +
+    pad(new Date(year, month + 1, 0).getDate());
 
-  db.from("schedules").select("*").gte("date", start).lte("date", end)
+  db.from("schedules")
+    .select("*")
+    .gte("date", start)
+    .lte("date", end)
     .then(function (res) {
       scheduleData = {};
-      if (res.data) res.data.forEach(function (row) { scheduleData[row.date] = row; });
-      if (res.error) setStatus("Error cargando datos: " + res.error.message, "err");
+      if (res.data)
+        res.data.forEach(function (row) {
+          scheduleData[row.date] = row;
+        });
+      if (res.error)
+        setStatus("Error cargando datos: " + res.error.message, "err");
       if (cb) cb();
     });
 }
 
 function loadMembers() {
   if (!db) return;
-  db.from("members").select("*").order("name")
+  db.from("members")
+    .select("*")
+    .order("name")
     .then(function (res) {
-      if (res.error) { setStatus("Error cargando miembros: " + res.error.message, "err"); return; }
+      if (res.error) {
+        setStatus("Error cargando miembros: " + res.error.message, "err");
+        return;
+      }
       members = res.data || [];
       renderMiniTeam();
     });
@@ -285,9 +357,33 @@ function selectDate(dateStr) {
 
 function renderDetail(dateStr) {
   var parts = dateStr.split("-");
-  var date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-  var label = DAYS[date.getDay()] + " " + parseInt(parts[2]) + " de " + MONTHS[parseInt(parts[1]) - 1];
+  var date = new Date(
+    parseInt(parts[0]),
+    parseInt(parts[1]) - 1,
+    parseInt(parts[2]),
+  );
+  var label =
+    DAYS[date.getDay()] +
+    " " +
+    parseInt(parts[2]) +
+    " de " +
+    MONTHS[parseInt(parts[1]) - 1];
   document.getElementById("detail-date").textContent = label;
+  var copyBtn = document.getElementById("copy-day-btn");
+  if (copyBtn) copyBtn.remove();
+  if (isAdmin) {
+    var hdr = document.querySelector(".panel-header");
+    var btn = document.createElement("button");
+    btn.id = "copy-day-btn";
+    btn.className = "btn-copy-day";
+    btn.title = "Copiar este día";
+    btn.innerHTML =
+      '<svg width="13" height="13" viewBox="0 0 20 20" fill="none"><rect x="7" y="7" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M4 13H3a2 2 0 01-2-2V3a2 2 0 012-2h8a2 2 0 012 2v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+    btn.onclick = function () {
+      copyDay(dateStr);
+    };
+    hdr.appendChild(btn);
+  }
 
   var sched = scheduleData[dateStr] || {};
   var songs = sched.songs ? JSON.parse(sched.songs) : [];
@@ -301,37 +397,39 @@ function renderDetail(dateStr) {
     '<div class="add-row admin-only">' +
     '<input id="new-song" placeholder="Título de canción" />' +
     '<input id="new-song-url" placeholder="Link YouTube" />' +
-    '<button onclick="addSong(\'' + dateStr + '\')">+</button>' +
-    '</div>' +
-
+    "<button onclick=\"addSong('" +
+    dateStr +
+    "')\">+</button>" +
+    "</div>" +
     '<div class="section-divider"></div>' +
-
     // MINISTERS
     '<div class="section-label">Ministros</div>' +
     '<ul class="section-list" id="ministers-list"></ul>' +
     '<div class="admin-only">' +
     '<button class="btn-toggle-members" id="toggle-members-btn" onclick="toggleMemberPicker()">' +
     '<svg width="13" height="13" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
-    'Agregar / Editar ministro' +
-    '</button>' +
+    "Agregar / Editar ministro" +
+    "</button>" +
     '<div class="member-checkbox-list collapsed" id="minister-checkboxes"></div>' +
-    '</div>' +
-
+    "</div>" +
     '<div class="section-divider"></div>' +
-
     // NOTES
     '<div class="section-label">Notas</div>' +
     '<textarea class="notes-area" id="notes-area" placeholder="Tono, orden del servicio…"' +
-    (isAdmin ? '' : ' readonly') + '>' +
+    (isAdmin ? "" : " readonly") +
+    ">" +
     escapeHtml(notes) +
-    '</textarea>' +
+    "</textarea>" +
     (isAdmin
-      ? '<button class="btn-save admin-only" onclick="saveNotes(\'' + dateStr + '\')">Guardar notas</button>'
-      : '');
+      ? '<button class="btn-save admin-only" onclick="saveNotes(\'' +
+        dateStr +
+        "')\">Guardar notas</button>"
+      : "");
 
   renderSongsList(songs, dateStr);
   renderMinistersList(mins, dateStr);
   applyAdminVisibility();
+  updatePasteBtn();
 }
 
 function escapeHtml(str) {
@@ -383,7 +481,9 @@ function renderSongsList(songs, dateStr) {
       var delBtn = document.createElement("button");
       delBtn.className = "item-del admin-only";
       delBtn.textContent = "×";
-      delBtn.onclick = function () { removeSong(i, dateStr); };
+      delBtn.onclick = function () {
+        removeSong(i, dateStr);
+      };
       li.appendChild(delBtn);
     }
 
@@ -427,9 +527,11 @@ function setupSmoothDrag(list, songs, dateStr) {
   function moveDrag(clientY) {
     if (!dragging) return;
 
-    dragging.style.top = (clientY - offsetY) + "px";
+    dragging.style.top = clientY - offsetY + "px";
 
-    var listItems = Array.from(list.querySelectorAll("li:not(.drag-placeholder):not([style*='fixed'])"));
+    var listItems = Array.from(
+      list.querySelectorAll("li:not(.drag-placeholder):not([style*='fixed'])"),
+    );
     var insertBefore = null;
     var newIdx = listItems.length;
 
@@ -482,11 +584,15 @@ function setupSmoothDrag(list, songs, dateStr) {
         var adjustedIdx = dragSrcIdx < newIdx ? newIdx - 1 : newIdx;
         reordered.splice(adjustedIdx, 0, moved);
 
-        upsertSchedule(dateStr, { songs: JSON.stringify(reordered) }, function () {
-          scheduleData[dateStr].songs = JSON.stringify(reordered);
-          renderSongsList(reordered, dateStr);
-          renderCalendar();
-        });
+        upsertSchedule(
+          dateStr,
+          { songs: JSON.stringify(reordered) },
+          function () {
+            scheduleData[dateStr].songs = JSON.stringify(reordered);
+            renderSongsList(reordered, dateStr);
+            renderCalendar();
+          },
+        );
       }
 
       dragging = null;
@@ -500,12 +606,21 @@ function setupSmoothDrag(list, songs, dateStr) {
   }
 
   // ── Handlers mouse ──
-  function onMouseMove(e) { moveDrag(e.clientY); }
-  function onMouseUp() { endDrag(); }
+  function onMouseMove(e) {
+    moveDrag(e.clientY);
+  }
+  function onMouseUp() {
+    endDrag();
+  }
 
   // ── Handlers touch ──
-  function onTouchMove(e) { e.preventDefault(); moveDrag(e.touches[0].clientY); }
-  function onTouchEnd() { endDrag(); }
+  function onTouchMove(e) {
+    e.preventDefault();
+    moveDrag(e.touches[0].clientY);
+  }
+  function onTouchEnd() {
+    endDrag();
+  }
 
   // ── Bind a cada handle ──
   items.forEach(function (item, i) {
@@ -519,12 +634,16 @@ function setupSmoothDrag(list, songs, dateStr) {
       document.addEventListener("mouseup", onMouseUp);
     });
 
-    handle.addEventListener("touchstart", function (e) {
-      e.preventDefault();
-      startDrag(item, i, e.touches[0].clientY);
-      document.addEventListener("touchmove", onTouchMove, { passive: false });
-      document.addEventListener("touchend", onTouchEnd);
-    }, { passive: false });
+    handle.addEventListener(
+      "touchstart",
+      function (e) {
+        e.preventDefault();
+        startDrag(item, i, e.touches[0].clientY);
+        document.addEventListener("touchmove", onTouchMove, { passive: false });
+        document.addEventListener("touchend", onTouchEnd);
+      },
+      { passive: false },
+    );
   });
 }
 
@@ -537,14 +656,20 @@ function renderMinistersList(mins, dateStr) {
     el.innerHTML = '<li class="empty-list">Sin ministros asignados</li>';
     return;
   }
-  el.innerHTML = mins.map(function (m) {
-    return (
-      '<li>' +
-      '<span class="item-name">· ' + escapeHtml(m.name) + '</span>' +
-      '<span class="item-sub">' + escapeHtml(m.instrument || "") + '</span>' +
-      '</li>'
-    );
-  }).join("");
+  el.innerHTML = mins
+    .map(function (m) {
+      return (
+        "<li>" +
+        '<span class="item-name">· ' +
+        escapeHtml(m.name) +
+        "</span>" +
+        '<span class="item-sub">' +
+        escapeHtml(m.instrument || "") +
+        "</span>" +
+        "</li>"
+      );
+    })
+    .join("");
 }
 
 // ── SONGS CRUD ────────────────────────────────────────────────
@@ -570,7 +695,7 @@ function removeSong(idx, dateStr) {
   if (!isAdmin) return;
   var sched = scheduleData[dateStr] || {};
   var songs = sched.songs ? JSON.parse(sched.songs) : [];
-  var title = songs[idx] ? (songs[idx].title || songs[idx]) : "esta canción";
+  var title = songs[idx] ? songs[idx].title || songs[idx] : "esta canción";
   confirmAction('¿Seguro que deseas eliminar "' + title + '"?', function () {
     songs.splice(idx, 1);
     upsertSchedule(dateStr, { songs: JSON.stringify(songs) }, function () {
@@ -585,15 +710,23 @@ function removeSong(idx, dateStr) {
 // y programa un guardado en Supabase con debounce de 800ms.
 function toggleMinister(memberId, dateStr) {
   if (!isAdmin) return;
-  var member = members.find(function (m) { return String(m.id) === String(memberId); });
+  var member = members.find(function (m) {
+    return String(m.id) === String(memberId);
+  });
   if (!member) return;
 
   var sched = scheduleData[dateStr] || {};
   var mins = sched.ministers ? JSON.parse(sched.ministers) : [];
-  var idx = mins.findIndex(function (m) { return String(m.id) === String(memberId); });
+  var idx = mins.findIndex(function (m) {
+    return String(m.id) === String(memberId);
+  });
 
   if (idx === -1) {
-    mins.push({ id: member.id, name: member.name, instrument: member.instrument });
+    mins.push({
+      id: member.id,
+      name: member.name,
+      instrument: member.instrument,
+    });
   } else {
     mins.splice(idx, 1);
   }
@@ -626,41 +759,57 @@ function showSavingIndicator(saving) {
 }
 
 function renderMemberCheckboxes(currentMins, dateStr) {
-  if (!members.length) return '<p style="font-size:12px;color:var(--text-3);padding:8px 10px">Sin miembros en el equipo.</p>';
-  return members.map(function (m) {
-    var checked = currentMins.some(function (min) { return String(min.id) === String(m.id); });
-    return (
-      '<label class="member-checkbox-row' + (checked ? ' checked' : '') + '">' +
-      '<input type="checkbox" ' + (checked ? 'checked' : '') +
-      ' onchange="toggleMinister(' + m.id + ',\'' + dateStr + '\')">' +
-      '<span class="mcb-name">' + escapeHtml(m.name) + '</span>' +
-      '<span class="mcb-instr">' + escapeHtml(m.instrument || '') + '</span>' +
-      '</label>'
-    );
-  }).join('');
+  if (!members.length)
+    return '<p style="font-size:12px;color:var(--text-3);padding:8px 10px">Sin miembros en el equipo.</p>';
+  return members
+    .map(function (m) {
+      var checked = currentMins.some(function (min) {
+        return String(min.id) === String(m.id);
+      });
+      return (
+        '<label class="member-checkbox-row' +
+        (checked ? " checked" : "") +
+        '">' +
+        '<input type="checkbox" ' +
+        (checked ? "checked" : "") +
+        ' onchange="toggleMinister(' +
+        m.id +
+        ",'" +
+        dateStr +
+        "')\">" +
+        '<span class="mcb-name">' +
+        escapeHtml(m.name) +
+        "</span>" +
+        '<span class="mcb-instr">' +
+        escapeHtml(m.instrument || "") +
+        "</span>" +
+        "</label>"
+      );
+    })
+    .join("");
 }
 
 function renderMemberCheckboxes_update(mins, dateStr) {
-  var el = document.getElementById('minister-checkboxes');
-  if (el && !el.classList.contains('collapsed')) {
+  var el = document.getElementById("minister-checkboxes");
+  if (el && !el.classList.contains("collapsed")) {
     el.innerHTML = renderMemberCheckboxes(mins, dateStr);
   }
 }
 
 function toggleMemberPicker() {
-  var list = document.getElementById('minister-checkboxes');
-  var btn = document.getElementById('toggle-members-btn');
+  var list = document.getElementById("minister-checkboxes");
+  var btn = document.getElementById("toggle-members-btn");
   if (!list) return;
-  var isOpen = !list.classList.contains('collapsed');
+  var isOpen = !list.classList.contains("collapsed");
   if (isOpen) {
-    list.classList.add('collapsed');
-    btn.classList.remove('open');
+    list.classList.add("collapsed");
+    btn.classList.remove("open");
   } else {
     var sched = scheduleData[selectedDate] || {};
     var mins = sched.ministers ? JSON.parse(sched.ministers) : [];
     list.innerHTML = renderMemberCheckboxes(mins, selectedDate);
-    list.classList.remove('collapsed');
-    btn.classList.add('open');
+    list.classList.remove("collapsed");
+    btn.classList.add("open");
   }
 }
 
@@ -668,7 +817,64 @@ function toggleMemberPicker() {
 function saveNotes(dateStr) {
   if (!isAdmin) return;
   var notes = document.getElementById("notes-area").value;
-  upsertSchedule(dateStr, { notes: notes }, function () { toast("Notas guardadas ✓"); });
+  upsertSchedule(dateStr, { notes: notes }, function () {
+    toast("Notas guardadas ✓");
+  });
+}
+
+// ── COPY / PASTE DAY ─────────────────────────────────────────
+var _copiedDay = null;
+
+function copyDay(dateStr) {
+  var sched = scheduleData[dateStr] || {};
+  _copiedDay = {
+    songs: sched.songs || "[]",
+    ministers: sched.ministers || "[]",
+    notes: sched.notes || "",
+  };
+  toast("Día copiado ✓ — selecciona otro día y pega");
+  // Mostrar botón pegar si hay otro día seleccionado
+  updatePasteBtn();
+}
+
+function pasteDay(dateStr) {
+  if (!_copiedDay || !isAdmin) return;
+  confirmAction(
+    "¿Pegar el contenido copiado en este día? Se reemplazará lo que haya.",
+    function () {
+      upsertSchedule(
+        dateStr,
+        {
+          songs: _copiedDay.songs,
+          ministers: _copiedDay.ministers,
+          notes: _copiedDay.notes,
+        },
+        function () {
+          renderDetail(dateStr);
+          renderCalendar();
+          toast("Pegado ✓");
+        },
+      );
+    },
+  );
+}
+
+function updatePasteBtn() {
+  var existing = document.getElementById("paste-day-btn");
+  if (existing) existing.remove();
+  if (!_copiedDay || !isAdmin || !selectedDate) return;
+  var hdr = document.querySelector(".panel-header");
+  if (!hdr) return;
+  var btn = document.createElement("button");
+  btn.id = "paste-day-btn";
+  btn.className = "btn-copy-day btn-paste-day";
+  btn.title = "Pegar día copiado";
+  btn.innerHTML =
+    '<svg width="13" height="13" viewBox="0 0 20 20" fill="none"><path d="M7 3h6M7 3a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V5a2 2 0 00-2-2M7 3H5a2 2 0 00-2 2v12a2 2 0 002 2h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+  btn.onclick = function () {
+    pasteDay(selectedDate);
+  };
+  hdr.appendChild(btn);
 }
 
 // ── UPSERT ────────────────────────────────────────────────────
@@ -681,9 +887,13 @@ function upsertSchedule(dateStr, fields, cb) {
   updated.date = dateStr;
   scheduleData[dateStr] = updated;
 
-  db.from("schedules").upsert(updated, { onConflict: "date" })
+  db.from("schedules")
+    .upsert(updated, { onConflict: "date" })
     .then(function (res) {
-      if (res.error) { toast("Error: " + res.error.message); return; }
+      if (res.error) {
+        toast("Error: " + res.error.message);
+        return;
+      }
       if (cb) cb();
     });
 }
@@ -703,9 +913,14 @@ function addMember() {
   var name = document.getElementById("new-member-name").value.trim();
   var instrument = document.getElementById("new-member-instr").value.trim();
   if (!name || !db) return;
-  db.from("members").insert({ name: name, instrument: instrument }).select()
+  db.from("members")
+    .insert({ name: name, instrument: instrument })
+    .select()
     .then(function (res) {
-      if (res.error) { toast("Error: " + res.error.message); return; }
+      if (res.error) {
+        toast("Error: " + res.error.message);
+        return;
+      }
       if (res.data && res.data.length) members.push(res.data[0]);
       document.getElementById("new-member-name").value = "";
       document.getElementById("new-member-instr").value = "";
@@ -717,16 +932,25 @@ function addMember() {
 
 function deleteMember(id) {
   if (!isAdmin) return;
-  var member = members.find(function (m) { return m.id === id; });
-  var name = member ? member.name : "este miembro";
-  confirmAction('¿Seguro que deseas eliminar a ' + name + ' del equipo?', function () {
-    db.from("members").delete().eq("id", id)
-      .then(function () {
-        members = members.filter(function (m) { return m.id !== id; });
-        renderMiniTeam();
-        renderMembersModal();
-      });
+  var member = members.find(function (m) {
+    return m.id === id;
   });
+  var name = member ? member.name : "este miembro";
+  confirmAction(
+    "¿Seguro que deseas eliminar a " + name + " del equipo?",
+    function () {
+      db.from("members")
+        .delete()
+        .eq("id", id)
+        .then(function () {
+          members = members.filter(function (m) {
+            return m.id !== id;
+          });
+          renderMiniTeam();
+          renderMembersModal();
+        });
+    },
+  );
 }
 
 function renderMiniTeam() {
@@ -738,19 +962,33 @@ function renderMiniTeam() {
       '<div class="no-members" style="grid-column:span 2">Agrega miembros con el botón "Equipo"</div>';
     return;
   }
-  el.innerHTML = members.map(function (m) {
-    var initials = m.name.split(" ").map(function (w) { return w[0]; })
-      .join("").substring(0, 2).toUpperCase();
-    return (
-      '<div class="member-chip">' +
-      '<div class="member-avatar">' + initials + '</div>' +
-      '<div class="member-info">' +
-      '<div class="name">' + escapeHtml(m.name) + '</div>' +
-      '<div class="instr">' + escapeHtml(m.instrument || "—") + '</div>' +
-      '</div>' +
-      '</div>'
-    );
-  }).join("");
+  el.innerHTML = members
+    .map(function (m) {
+      var initials = m.name
+        .split(" ")
+        .map(function (w) {
+          return w[0];
+        })
+        .join("")
+        .substring(0, 2)
+        .toUpperCase();
+      return (
+        '<div class="member-chip">' +
+        '<div class="member-avatar">' +
+        initials +
+        "</div>" +
+        '<div class="member-info">' +
+        '<div class="name">' +
+        escapeHtml(m.name) +
+        "</div>" +
+        '<div class="instr">' +
+        escapeHtml(m.instrument || "—") +
+        "</div>" +
+        "</div>" +
+        "</div>"
+      );
+    })
+    .join("");
 }
 
 function toggleTeam() {
@@ -768,27 +1006,38 @@ function toggleTeam() {
 function renderMembersModal() {
   var el = document.getElementById("modal-member-list");
   if (!members.length) {
-    el.innerHTML = '<div style="color:var(--text-3);font-size:13px;margin-bottom:12px">No hay miembros aún.</div>';
+    el.innerHTML =
+      '<div style="color:var(--text-3);font-size:13px;margin-bottom:12px">No hay miembros aún.</div>';
     return;
   }
-  el.innerHTML = members.map(function (m) {
-    return (
-      '<div class="modal-member-row">' +
-      '<div>' +
-      '<div class="name">' + escapeHtml(m.name) + '</div>' +
-      '<div class="instr">' + escapeHtml(m.instrument || "Sin instrumento") + '</div>' +
-      '</div>' +
-      '<button class="item-del" onclick="deleteMember(' + m.id + ')">×</button>' +
-      '</div>'
-    );
-  }).join("");
+  el.innerHTML = members
+    .map(function (m) {
+      return (
+        '<div class="modal-member-row">' +
+        "<div>" +
+        '<div class="name">' +
+        escapeHtml(m.name) +
+        "</div>" +
+        '<div class="instr">' +
+        escapeHtml(m.instrument || "Sin instrumento") +
+        "</div>" +
+        "</div>" +
+        '<button class="item-del" onclick="deleteMember(' +
+        m.id +
+        ')">×</button>' +
+        "</div>"
+      );
+    })
+    .join("");
 }
 
 // ── CERRAR MODALES AL HACER CLIC FUERA ──────────────────────
-document.getElementById('members-modal').addEventListener('click', function (e) {
-  if (e.target === this) closeMembersModal();
-});
-document.getElementById('login-modal').addEventListener('click', function (e) {
+document
+  .getElementById("members-modal")
+  .addEventListener("click", function (e) {
+    if (e.target === this) closeMembersModal();
+  });
+document.getElementById("login-modal").addEventListener("click", function (e) {
   if (e.target === this) closeLoginModal();
 });
 
@@ -802,7 +1051,8 @@ function exportMonthPDF() {
     var daysInMonth = new Date(year, month + 1, 0).getDate();
 
     var doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-    var W = 210, H = 297;
+    var W = 210,
+      H = 297;
     var margin = 16;
 
     var C = {
@@ -835,7 +1085,12 @@ function exportMonthPDF() {
     doc.text(monthName + " " + year, margin, 18);
 
     var now = new Date();
-    var exportStr = pad(now.getDate()) + "/" + pad(now.getMonth() + 1) + "/" + now.getFullYear();
+    var exportStr =
+      pad(now.getDate()) +
+      "/" +
+      pad(now.getMonth() + 1) +
+      "/" +
+      now.getFullYear();
     doc.setFontSize(8);
     doc.text("Exportado: " + exportStr, W - margin, 18, { align: "right" });
 
@@ -845,11 +1100,13 @@ function exportMonthPDF() {
     for (var d2 = 1; d2 <= daysInMonth; d2++) {
       var ds = year + "-" + pad(month + 1) + "-" + pad(d2);
       var sd = scheduleData[ds];
-      if (sd && (
-        (sd.songs && JSON.parse(sd.songs).length) ||
-        (sd.ministers && JSON.parse(sd.ministers).length) ||
-        sd.notes
-      )) daysWithData.push(ds);
+      if (
+        sd &&
+        ((sd.songs && JSON.parse(sd.songs).length) ||
+          (sd.ministers && JSON.parse(sd.ministers).length) ||
+          sd.notes)
+      )
+        daysWithData.push(ds);
     }
 
     if (daysWithData.length > 0) {
@@ -866,15 +1123,27 @@ function exportMonthPDF() {
 
       daysWithData.forEach(function (ds) {
         var parts = ds.split("-");
-        var dDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-        var label = DAYS[dDate.getDay()] + " " + parseInt(parts[2]) + " de " + MONTHS[parseInt(parts[1]) - 1];
+        var dDate = new Date(
+          parseInt(parts[0]),
+          parseInt(parts[1]) - 1,
+          parseInt(parts[2]),
+        );
+        var label =
+          DAYS[dDate.getDay()] +
+          " " +
+          parseInt(parts[2]) +
+          " de " +
+          MONTHS[parseInt(parts[1]) - 1];
         var sd2 = scheduleData[ds];
         var songs3 = sd2.songs ? JSON.parse(sd2.songs) : [];
         var mins3 = sd2.ministers ? JSON.parse(sd2.ministers) : [];
         var notes3 = sd2.notes || "";
-        var noteLines = notes3 ? doc.splitTextToSize(notes3, W - margin * 2 - 12).slice(0, 3) : [];
+        var noteLines = notes3
+          ? doc.splitTextToSize(notes3, W - margin * 2 - 12).slice(0, 3)
+          : [];
 
-        var blockH = 7 + songs3.length * 5.5 + mins3.length * 5 + noteLines.length * 4 + 6;
+        var blockH =
+          7 + songs3.length * 5.5 + mins3.length * 5 + noteLines.length * 4 + 6;
 
         if (y + blockH > H - 16) {
           doc.addPage();
@@ -901,7 +1170,7 @@ function exportMonthPDF() {
 
         if (songs3.length) {
           songs3.forEach(function (s) {
-            var title = (s.title || s);
+            var title = s.title || s;
             var url = s.url || null;
             doc.setFont("helvetica", "normal");
             doc.setFontSize(8);
@@ -961,8 +1230,17 @@ function exportMonthPDF() {
       doc.setCharSpace(0);
       doc.setTextColor(C.muted[0], C.muted[1], C.muted[2]);
       doc.text(
-        "Group Zoe - Aliento de Vida - " + monthName + " " + year + "   |   Pag. " + p + " de " + totalPages,
-        W / 2, H - 3.5, { align: "center" }
+        "Group Zoe - Aliento de Vida - " +
+          monthName +
+          " " +
+          year +
+          "   |   Pag. " +
+          p +
+          " de " +
+          totalPages,
+        W / 2,
+        H - 3.5,
+        { align: "center" },
       );
     }
 
@@ -975,9 +1253,14 @@ function exportMonthPDF() {
   } else {
     toast("Preparando PDF...");
     var script = document.createElement("script");
-    script.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
-    script.onload = function () { runExport(); };
-    script.onerror = function () { toast("Error al cargar jsPDF. Verifica tu conexión."); };
+    script.src =
+      "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+    script.onload = function () {
+      runExport();
+    };
+    script.onerror = function () {
+      toast("Error al cargar jsPDF. Verifica tu conexión.");
+    };
     document.head.appendChild(script);
   }
 }
@@ -1019,6 +1302,10 @@ function closeMobileMenu() {
 function toggleThemeMobile() {
   toggleTheme();
   var isDark = document.documentElement.getAttribute("data-theme") === "dark";
-  document.getElementById("mobile-theme-icon").textContent = isDark ? "☀️" : "🌙";
-  document.getElementById("mobile-theme-label").textContent = isDark ? "Modo claro" : "Modo oscuro";
+  document.getElementById("mobile-theme-icon").textContent = isDark
+    ? "☀️"
+    : "🌙";
+  document.getElementById("mobile-theme-label").textContent = isDark
+    ? "Modo claro"
+    : "Modo oscuro";
 }

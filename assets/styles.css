@@ -30,13 +30,13 @@
   --surface: #1c1917;
   --surface-2: #231f1d;
   --border: #2d2926;
-  --border-strong: #44403c;
+  --border-strong: #5a5a5a;
   --text: #fafaf9;
-  --text-2: #a8a29e;
-  --text-3: #57534e;
-  --accent: #a8a29e;
+  --text-2: #c3bdb9;
+  --text-3: #aea8a1;
+  --accent: #c7beb8;
   --accent-bg: #2d2926;
-  --accent-border: #44403c;
+  --accent-border: #e0e0e0;
   --danger: #ef4444;
   --success-bg: #052e16;
   --success-text: #4ade80;
